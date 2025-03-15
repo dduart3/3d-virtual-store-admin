@@ -6,6 +6,7 @@ import {
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import Dashboard from "./modules/dashboard";
 //import { RegisterPage } from "./pages/RegisterPage";
 //import { StorePage } from "./pages/StorePage";
 //import { ProfilePage } from "./pages/ProfilePage";
@@ -17,7 +18,7 @@ const rootRoute = createRootRoute();
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: LandingPage,
+  component: Dashboard,
 });
 
 const loginRoute = createRoute({
