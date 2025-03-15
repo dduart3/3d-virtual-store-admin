@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
+import { DashboardPage } from "./pages/DashboardPage";
 //import { RegisterPage } from "./pages/RegisterPage";
 //import { StorePage } from "./pages/StorePage";
 //import { ProfilePage } from "./pages/ProfilePage";
@@ -49,6 +50,14 @@ const profileRoute = createRoute({
   ),
 });
 
+const dashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard",
+  component: () => (
+   <DashboardPage />
+  ),
+});
+
 // Create and export the router
 const routeTree = rootRoute.addChildren([
   landingRoute,
@@ -56,6 +65,7 @@ const routeTree = rootRoute.addChildren([
   registerRoute,
   storeRoute,
   profileRoute,
+  dashboardRoute
 ]);
 
 export const router = createRouter({ routeTree });
