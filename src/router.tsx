@@ -3,10 +3,10 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
-import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
-import { DashboardPage } from "./pages/DashboardPage";
 import Dashboard from "./modules/dashboard";
+import Products from "./modules/products";
+
 //import { RegisterPage } from "./pages/RegisterPage";
 //import { StorePage } from "./pages/StorePage";
 //import { ProfilePage } from "./pages/ProfilePage";
@@ -47,7 +47,7 @@ const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/profile",
   component: () => (
-   <p>nada aun</p>
+    <p>nada aun</p>
   ),
 });
 
@@ -55,7 +55,16 @@ const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
   component: () => (
-   <DashboardPage />
+    <Dashboard />
+  ),
+});
+
+
+const productRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/products",
+  component: () => (
+    <Products />
   ),
 });
 
@@ -66,7 +75,8 @@ const routeTree = rootRoute.addChildren([
   registerRoute,
   storeRoute,
   profileRoute,
-  dashboardRoute
+  dashboardRoute,
+  productRoute
 ]);
 
 export const router = createRouter({ routeTree });

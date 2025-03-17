@@ -1,14 +1,14 @@
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Package, 
-  Users, 
-  BarChart, 
-  Settings, 
-  ChevronLeft, 
-  ChevronRight 
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Package,
+  Users,
+  BarChart,
+  Settings,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigation } from "@/contexts/NavigationContext";
@@ -60,7 +60,6 @@ export function Sidebar({ className }: SidebarProps) {
               key={item.href}
               item={item}
               collapsed={collapsed}
-              isActive={activeRoute === item.href}
               onClick={() => setActiveRoute(item.href)}
             />
           ))}
@@ -86,17 +85,26 @@ interface SidebarNavItemProps {
   onClick: () => void;
 }
 
-function SidebarNavItem({ item, collapsed, isActive, onClick }: SidebarNavItemProps) {
+function SidebarNavItem({ item, collapsed, onClick }: Omit<SidebarNavItemProps, 'isActive'>) {
+  // Get current path to determine active state
+  const currentPath = window.location.pathname;
+  const isItemActive = currentPath === item.href;
+
+  const handleClick = () => {
+    onClick();
+    window.location.href = item.href;
+  };
+
   return (
     <li>
       <Button
-        variant={isActive ? "secondary" : "ghost"}
+        variant={isItemActive ? "secondary" : "ghost"}
         className={cn(
           "w-full justify-start",
           item.disabled && "pointer-events-none opacity-50"
         )}
         disabled={item.disabled}
-        onClick={onClick}
+        onClick={handleClick}
       >
         <span className="mr-2">{item.icon}</span>
         {!collapsed && <span>{item.title}</span>}
@@ -110,11 +118,15 @@ const sidebarItems: SidebarItem[] = [
     title: "Dashboard",
     icon: <LayoutDashboard size={20} />,
     href: "/dashboard",
+
+
   },
   {
     title: "Products",
     icon: <ShoppingBag size={20} />,
     href: "/products",
+
+
   },
   {
     title: "Orders",

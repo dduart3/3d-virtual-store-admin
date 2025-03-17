@@ -11,20 +11,22 @@ interface TopNavProps {
 }
 
 export function TopNav({ links, onNavigate }: TopNavProps) {
+  const handleClick = (href: string) => {
+    window.location.href = href;
+    onNavigate?.(href);
+  };
+
   return (
-    <nav className="flex items-center space-x-4 lg:space-x-6">
+    <nav className="flex items-center space-x-4">
       {links.map((link) => (
         <button
           key={link.href}
-          onClick={() => onNavigate(link.href)}
           className={cn(
             "text-sm font-medium transition-colors hover:text-primary",
-            link.isActive
-              ? "text-primary"
-              : "text-muted-foreground",
-            link.disabled && "pointer-events-none opacity-50"
+            link.isActive ? "text-black dark:text-white" : "text-muted-foreground"
           )}
           disabled={link.disabled}
+          onClick={() => handleClick(link.href)}
         >
           {link.title}
         </button>
