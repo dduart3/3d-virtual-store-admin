@@ -2,36 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { OrdersResult, PopulatedOrder, Profile, OrderItem, PaginationParams } from "../types/orders";
 
-export function useRecentOrders() {
-    return useQuery({
-        queryKey: ["orders", "recent"],
-        queryFn: async (): Promise<PopulatedOrder[]> => {
-            const { data: orders, error } = await supabase
-                .from("orders")
-                .select('*, profiles(*)')
-                .order("created_at", { ascending: false })
-                .limit(5);
-
-            if (error) {
-                throw new Error(`Error fetching orders: ${error.message}`);
-            }
-
-            if (!orders) return [];
-
-            return orders.map((order) => ({
-                ...order,
-                items: [],
-                profile: order.profiles || {
-                    id: order.user_id,
-                    username: 'Unknown User',
-                    email: 'unknown@email.com'
-                }
-            }));
-        },
-        refetchInterval: 5 * 60 * 1000,
-        staleTime: 60 * 1000,
-    });
-}
 
 export function useOrders(pagination: PaginationParams = { page: 1, pageSize: 10 }) {
     return useQuery<OrdersResult>({
