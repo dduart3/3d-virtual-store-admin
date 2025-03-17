@@ -4,8 +4,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useOrders } from "../../hooks/useOrders";
 
 function SalesCard() {
+    const { data: ordersData, isLoading } = useOrders({ page: 1, pageSize: 1 });
+    const totalOrders = ordersData?.totalCount || 0;
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -26,9 +30,11 @@ function SalesCard() {
                 </svg>
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">+2350</div>
+                <div className="text-2xl font-bold">
+                    {isLoading ? "Cargando ..." : totalOrders}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                    +180.1% from last month
+                    Total de órdenes
                 </p>
             </CardContent>
         </Card>

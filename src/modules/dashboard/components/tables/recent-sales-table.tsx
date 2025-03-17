@@ -15,7 +15,6 @@ export function RecentSalesTable() {
         return <div>Error al cargar las ordenes.</div>;
     }
 
-
     const recentOrders = ordersData?.orders.slice(0, 5);
 
     return (
@@ -24,14 +23,14 @@ export function RecentSalesTable() {
                 <div key={order.id} className="flex items-center">
                     <div className="ml-4 space-y-1">
                         <p className="text-sm font-medium leading-none">
-                            {order.profile.username || 'Usuario Desconocido'}
+                            {`${order.profile.first_name || ''} ${order.profile.last_name || ''}`.trim() || 'Usuario Desconocido'}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                            {order.profile.email || 'Sin email'}
+                            {order.profile.email || 'Email Desconocido'}
                         </p>
                     </div>
                     <div className="ml-auto font-medium">
-                        +${Number(order.total).toFixed(2)}
+                        +${Number(order.total)}
                     </div>
                 </div>
             ))}
