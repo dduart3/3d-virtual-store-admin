@@ -54,18 +54,13 @@ const profileRoute = createRoute({
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
-  component: () => (
-    <Dashboard />
-  ),
+  component: Dashboard
 });
-
 
 const productRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/products",
-  component: () => (
-    <Products />
-  ),
+  component: Products
 });
 
 // Create and export the router

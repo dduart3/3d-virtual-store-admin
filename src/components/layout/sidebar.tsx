@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigation } from "@/contexts/NavigationContext";
+import { Link } from "@tanstack/react-router";
 
 interface SidebarProps {
   className?: string;
@@ -86,29 +87,24 @@ interface SidebarNavItemProps {
 }
 
 function SidebarNavItem({ item, collapsed, onClick }: Omit<SidebarNavItemProps, 'isActive'>) {
-  // Get current path to determine active state
-  const currentPath = window.location.pathname;
-  const isItemActive = currentPath === item.href;
-
-  const handleClick = () => {
-    onClick();
-    window.location.href = item.href;
-  };
+  const { activeRoute } = useNavigation();
+  const isItemActive = activeRoute === item.href;
 
   return (
     <li>
-      <Button
-        variant={isItemActive ? "secondary" : "ghost"}
-        className={cn(
-          "w-full justify-start",
-          item.disabled && "pointer-events-none opacity-50"
-        )}
-        disabled={item.disabled}
-        onClick={handleClick}
-      >
-        <span className="mr-2">{item.icon}</span>
-        {!collapsed && <span>{item.title}</span>}
-      </Button>
+      <Link to={item.href} onClick={onClick}>
+        <Button
+          variant={isItemActive ? "secondary" : "ghost"}
+          className={cn(
+            "w-full justify-start",
+            item.disabled && "pointer-events-none opacity-50"
+          )}
+          disabled={item.disabled}
+        >
+          <span className="mr-2">{item.icon}</span>
+          {!collapsed && <span>{item.title}</span>}
+        </Button>
+      </Link>
     </li>
   );
 }

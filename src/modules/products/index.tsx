@@ -1,77 +1,46 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileDropdown } from "@/components/profile-dropdown";
-import { Search } from "@/components/search";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { Layout } from "@/components/layout/layout";
-import RevenueCard from "../dashboard/components/cards/revenue-card";
-import SalesCard from "../dashboard/components/cards/sales-card";
-import ClientsCard from "../dashboard/components/cards/clients-card";
-import ActiveUsersCard from "../dashboard/components/cards/active-users-card";
-import OverviewCard from "../dashboard/components/cards/overview-card";
-import RecentSalesCard from "../dashboard/components/cards/recent-sales-card";
+import { Layout } from '@/components/layout/layout'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import { Search } from '@/components/search'
+import { ThemeSwitch } from '@/components/theme-switch'
+import { columns } from './components/users-columns'
+import { UsersDialogs } from './components/users-dialogs'
+import { UsersPrimaryButtons } from './components/users-primary-buttons'
+import { UsersTable } from './components/users-table'
+import UsersProvider from './context/users-context'
+import { userListSchema } from './data/schema'
+import { users } from './data/users'
 
+export default function Users() {
+  // Parse user list
+  const userList = userListSchema.parse(users)
 
-export default function products() {
-    const [activeTab, setActiveTab] = useState("products");
-    const headerContent = (
-        <>
+  const headerContent = (
+    <>
+      <Search />
+      <div className='ml-auto flex items-center space-x-4'>
+        <ThemeSwitch />
+        <ProfileDropdown />
+      </div>
+    </>
+  )
 
-            <div className="ml-auto flex items-center space-x-4">
-                <Search />
-                <ThemeSwitch />
-                <ProfileDropdown />
-            </div>
-        </>
-    );
-
-    return (
-        <Layout header={headerContent}>
-            <div className="mb-2 flex items-center justify-between space-y-2">
-                <h1 className="text-2xl font-bold tracking-tight">Productos</h1>
-                <div className="flex items-center space-x-2">
-                    <Button>Download</Button>
-                </div>
-            </div>
-
-            <Tabs
-                orientation="vertical"
-                defaultValue="overview"
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="space-y-4"
-            >
-                <div className="w-full overflow-x-auto pb-2">
-                    <TabsList>
-                        <TabsTrigger value="overview">Overview</TabsTrigger>
-                        <TabsTrigger value="analytics" disabled>
-                            Analytics
-                        </TabsTrigger>
-                        <TabsTrigger value="reports" disabled>
-                            Reports
-                        </TabsTrigger>
-                        <TabsTrigger value="notifications" disabled>
-                            Notifications
-                        </TabsTrigger>
-                    </TabsList>
-                </div>
-                <TabsContent value="overview" className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        <RevenueCard />
-                        <SalesCard />
-                        <ClientsCard />
-                        <ActiveUsersCard />
-                    </div>
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-                        <OverviewCard />
-                        <RecentSalesCard />
-                    </div>
-                </TabsContent>
-            </Tabs>
-
-
-        </Layout >
-    );
+  return (
+    <UsersProvider>
+      <Layout header={headerContent}>
+        <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
+          <div>
+            <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
+            <p className='text-muted-foreground'>
+              Manage your users and their roles here.
+            </p>
+          </div>
+          <UsersPrimaryButtons />
+        </div>
+        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+          <UsersTable data={userList} columns={columns} />
+        </div>
+        <UsersDialogs />
+      </Layout>
+    </UsersProvider>
+  )
 }
-

@@ -1,15 +1,19 @@
-import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
-  children: ReactNode;
+  children: React.ReactNode;
+  fixed?: boolean;  // Add the fixed prop as optional boolean
 }
 
-export function Header({ children }: HeaderProps) {
+export function Header({ children, fixed = false }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 border-b bg-background">
-      <div className="container flex h-16 items-center px-4 sm:px-6">
-        {children}
-      </div>
+    <header
+      className={cn(
+        'z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
+        fixed && 'fixed top-0'
+      )}
+    >
+      <div className='container flex h-16 items-center px-4'>{children}</div>
     </header>
-  );
+  )
 }
