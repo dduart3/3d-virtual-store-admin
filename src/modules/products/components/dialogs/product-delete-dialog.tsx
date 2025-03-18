@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import { toast } from '@/hooks/use-toast'
@@ -7,27 +5,27 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { User } from '../data/schema'
+import { PopulatedProduct } from '../../types/products'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: User
+  currentProduct: PopulatedProduct
 }
 
-export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
+export function ProductDeleteDialog({ open, onOpenChange, currentProduct }: Props) {
   const [value, setValue] = useState('')
 
   const handleDelete = () => {
-    if (value.trim() !== currentRow.username) return
+    if (value.trim() !== currentProduct.name) return
 
     onOpenChange(false)
     toast({
-      title: 'The following user has been deleted:',
+      title: 'The following product has been deleted:',
       description: (
         <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
           <code className='text-white'>
-            {JSON.stringify(currentRow, null, 2)}
+            {JSON.stringify(currentProduct, null, 2)}
           </code>
         </pre>
       ),
@@ -39,42 +37,38 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
       open={open}
       onOpenChange={onOpenChange}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentRow.username}
+      disabled={value.trim() !== currentProduct.name}
       title={
         <span className='text-destructive'>
           <IconAlertTriangle
             className='mr-1 inline-block stroke-destructive'
             size={18}
           />{' '}
-          Delete User
+          Delete Product
         </span>
       }
       desc={
         <div className='space-y-4'>
           <p className='mb-2'>
             Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.username}</span>?
+            <span className='font-bold'>{currentProduct.name}</span>?
             <br />
-            This action will permanently remove the user with the role of{' '}
-            <span className='font-bold'>
-              {currentRow.role.toUpperCase()}
-            </span>{' '}
-            from the system. This cannot be undone.
+            This action cannot be undone.
           </p>
 
           <Label className='my-2'>
-            Username:
+            Product Name:
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder='Enter username to confirm deletion.'
+              placeholder='Enter product name to confirm deletion.'
             />
           </Label>
 
           <Alert variant='destructive'>
             <AlertTitle>Warning!</AlertTitle>
             <AlertDescription>
-              Please be carefull, this operation can not be rolled back.
+              This operation cannot be rolled back.
             </AlertDescription>
           </Alert>
         </div>

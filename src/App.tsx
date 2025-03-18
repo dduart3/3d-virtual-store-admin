@@ -12,19 +12,21 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ToastProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-        <SearchProvider>
-        <NavigationProvider>
-          <RouterProvider router={router} />
-          </NavigationProvider>
-          </SearchProvider>
-          </ThemeProvider>
-        </ToastProvider>
-      </AuthProvider>
-    </QueryClientProvider >
+    <div>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ToastProvider>
+            <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+              <SearchProvider>
+                <NavigationProvider>
+                  <RouterProvider router={router} />
+                </NavigationProvider>
+              </SearchProvider>
+            </ThemeProvider>
+          </ToastProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </div>
   );
 }
 

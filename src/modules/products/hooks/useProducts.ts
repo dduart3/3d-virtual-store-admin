@@ -77,6 +77,7 @@ export function useProducts(pagination: PaginationParams = { page: 1, pageSize: 
             const populatedProducts = products.map(product => {
                 const populated = {
                     ...product,
+                    thumbnail: product.thumbnail_path, // Map thumbnail_path to thumbnail
                     section: sectionsMap[product.section_id] || {
                         id: product.section_id,
                         name: 'Unknown Section'
@@ -84,7 +85,6 @@ export function useProducts(pagination: PaginationParams = { page: 1, pageSize: 
                     model: modelsMap[product.id] || null,
                     status: product.stock > 20 ? "In Stock" : product.stock > 0 ? "Low Stock" : "Out of Stock"
                 };
-                console.log('Populated product:', { id: populated.id, name: populated.name, thumbnail: populated.thumbnail_path });
                 return populated;
             });
 

@@ -54,8 +54,8 @@ export function Sidebar({ className }: SidebarProps) {
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </Button>
       </div>
-      <nav className="flex-1 overflow-auto p-2">
-        <ul className="space-y-2 px-2 py-2">
+      <nav className="flex-1 p-2"> {/* Removed overflow-auto */}
+        <ul className="h-full space-y-2 px-2 py-2 overflow-y-auto"> {/* Added h-full and overflow-y-auto */}
           {sidebarItems.map((item) => (
             <SidebarNavItem
               key={item.href}

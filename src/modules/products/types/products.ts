@@ -7,7 +7,7 @@ export interface BaseProduct {
     description: string;
     section_id: string;
     stock: number;
-    thumbnail_path: string;
+    thumbnail: string;  // Changed from thumbnail_path
     created_at: string;
     updated_at: string;
 }
@@ -38,7 +38,7 @@ export interface TableProduct {
     price: number;
     stock: number;
     status: ProductStatus;
-    thumbnail_path: string;  
+    thumbnail: string;
 }
 
 export interface ProductsBySection {

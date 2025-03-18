@@ -6,7 +6,7 @@ interface MainProps {
 
 export function Main({ children }: MainProps) {
   return (
-    <main className="container flex-1 items-start px-4 py-6 sm:px-6 lg:px-8">
+    <main className="container h-full w-full px-4 pt-6 pb-0 sm:px-6 lg:px-8"> {/* Changed py-6 to pt-6 pb-0 */}
       {children}
     </main>
   );

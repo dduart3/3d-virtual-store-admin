@@ -2,18 +2,12 @@ import { Layout } from '@/components/layout/layout'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { columns } from './components/users-columns'
-import { UsersDialogs } from './components/users-dialogs'
-import { UsersPrimaryButtons } from './components/users-primary-buttons'
-import { UsersTable } from './components/users-table'
-import UsersProvider from './context/users-context'
-import { userListSchema } from './data/schema'
-import { users } from './data/users'
+import { columns } from './components/table/products-columns'
+import { ProductsTable } from './components/table/products-table'
+import { ProductsProvider } from './context/products-context'
+import { ProductDialogs } from './components/dialogs/product-dialogs'
 
-export default function Users() {
-  // Parse user list
-  const userList = userListSchema.parse(users)
-
+export default function Products() {
   const headerContent = (
     <>
       <Search />
@@ -25,22 +19,21 @@ export default function Users() {
   )
 
   return (
-    <UsersProvider>
+    <ProductsProvider>
       <Layout header={headerContent}>
-        <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
+        <div className='h-full flex flex-col'>
+          <div className='mb-4'>
+            <h2 className='text-2xl font-bold tracking-tight'>Lista de Productos</h2>
             <p className='text-muted-foreground'>
-              Manage your users and their roles here.
+              Maneja tus productos aqui.
             </p>
           </div>
-          <UsersPrimaryButtons />
+          <div className='flex-1 overflow-auto'>
+            <ProductsTable columns={columns} />
+          </div>
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <UsersTable data={userList} columns={columns} />
-        </div>
-        <UsersDialogs />
+        <ProductDialogs />
       </Layout>
-    </UsersProvider>
+    </ProductsProvider>
   )
 }

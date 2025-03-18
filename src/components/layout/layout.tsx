@@ -10,11 +10,11 @@ interface LayoutProps {
 
 export function Layout({ header, children }: LayoutProps) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-[100vh] w-[100vw] overflow-hidden">
       <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col h-screen">
         <Header>{header}</Header>
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto pb-10"> 
           <Main>{children}</Main>
         </div>
       </div>

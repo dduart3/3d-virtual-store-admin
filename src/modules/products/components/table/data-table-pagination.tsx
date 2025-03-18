@@ -23,7 +23,7 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   return (
     <div
-      className='flex items-center justify-between overflow-clip px-2'
+      className='flex items-center justify-between overflow-clip px-2 mt-10'
       style={{ overflowClipMargin: 1 }}
     >
       <div className='hidden flex-1 text-sm text-muted-foreground sm:block'>
