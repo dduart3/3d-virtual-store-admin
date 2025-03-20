@@ -21,13 +21,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { PopulatedProduct } from '../../types/products'
 import { toast } from '@/hooks/use-toast'
+import { useEffect, useRef } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useSections } from '@/modules/sections/hooks/use-sections'
 
 const productFormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
-  price: z.string().min(1, 'Price is required'),
-  stock: z.string().min(1, 'Stock is required'),
-  section_id: z.string().min(1, 'Section is required'),
+  name: z.string().min(1, 'Nombre es requerido'),
+  description: z.string().min(1, 'Descripcion es requerido'),
+  price: z.string().min(1, 'Precio es requerido'),
+  stock: z.string().min(1, 'Stock es requerido'),
+  section_id: z.string().min(1, 'Seccion es requerido'),
 })
 
 type ProductFormValues = z.infer<typeof productFormSchema>
@@ -36,9 +39,13 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentProduct: PopulatedProduct
+  onProductUpdated?: () => void
 }
 
-export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props) {
+export function ProductEditDialog({ open, onOpenChange, currentProduct, onProductUpdated }: Props) {
+  const { sections, isLoading, refreshSections } = useSections();
+  const dialogOpenedRef = useRef(false);
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
@@ -48,24 +55,57 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
       stock: currentProduct.stock.toString(),
       section_id: currentProduct.section_id,
     },
-  })
+  });
+
+
+  useEffect(() => {
+    if (open && !dialogOpenedRef.current) {
+      refreshSections();
+      dialogOpenedRef.current = true;
+    }
+
+    if (!open) {
+      dialogOpenedRef.current = false;
+    }
+  }, [open, refreshSections]);
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      // Here you would update the product in your database
-      console.log('Updating product:', data)
+  
+      const { error } = await supabase
+        .from('products')
+        .update({
+          name: data.name,
+          description: data.description,
+          price: parseFloat(data.price),
+          stock: parseInt(data.stock),
+          section_id: data.section_id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', currentProduct.id);
 
-      onOpenChange(false)
+      if (error) {
+        throw new Error(error.message);
+      }
+
+
+      onOpenChange(false);
+
+      if (onProductUpdated) {
+        onProductUpdated();
+      }
+
       toast({
-        title: 'Product updated successfully',
-        description: 'The product has been updated in the database.',
-      })
+        title: 'Producto actualizado',
+        description: 'El producto se ha actualizado correctamente.',
+      });
     } catch (error) {
+      console.error('Error updating product:', error);
       toast({
         title: 'Error',
-        description: 'There was an error updating the product.',
+        description: 'Hubo un error al actualizar el producto.',
         variant: 'destructive',
-      })
+      });
     }
   }
 
@@ -73,7 +113,7 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Edit Product</DialogTitle>
+          <DialogTitle>Editar Producto</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
@@ -82,7 +122,7 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -95,7 +135,7 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Descripcion</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -109,7 +149,7 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
                 name='price'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>Precio</FormLabel>
                     <FormControl>
                       <Input type='number' step='0.01' {...field} />
                     </FormControl>
@@ -136,15 +176,15 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
               name='section_id'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Section</FormLabel>
+                  <FormLabel>Seccion</FormLabel>
                   <FormControl>
                     <SelectDropdown
                       defaultValue={field.value}
                       onValueChange={field.onChange}
-                      items={[
-                        { label: currentProduct.section.name, value: currentProduct.section_id }
-                      ]}
+                      items={sections}
                       isControlled
+                      disabled={isLoading}
+                      placeholder={isLoading ? "Cargando secciones..." : "Selecciona una sección"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -157,9 +197,9 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props)
                 variant='outline'
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                Cancelar
               </Button>
-              <Button type='submit'>Save Changes</Button>
+              <Button type='submit'>Guardar Cambios</Button>
             </div>
           </form>
         </Form>

@@ -32,7 +32,7 @@ export const columns: ColumnDef<PopulatedProduct>[] = [
     },
     {
         id: 'thumbnail',
-        header: 'Image',
+        header: 'Imagen',
         cell: ({ row }) => {
 
             return (
@@ -50,16 +50,16 @@ export const columns: ColumnDef<PopulatedProduct>[] = [
     },
     {
         accessorKey: 'name',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Nombre' />,
     },
     {
         accessorKey: 'section',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='Section' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Seccion' />,
         cell: ({ row }) => row.original.section.name,
     },
     {
         accessorKey: 'price',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='Price' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Precio' />,
         cell: ({ row }) => {
             const price = parseFloat(row.getValue('price'))
             return new Intl.NumberFormat('en-US', {
@@ -74,7 +74,7 @@ export const columns: ColumnDef<PopulatedProduct>[] = [
     },
     {
         accessorKey: 'status',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Estado' />,
         cell: ({ row }) => {
             const status = row.getValue('status') as string
             const colorMap = {

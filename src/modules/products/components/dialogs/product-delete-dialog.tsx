@@ -50,30 +50,30 @@ export function ProductDeleteDialog({ open, onOpenChange, currentProduct }: Prop
       desc={
         <div className='space-y-4'>
           <p className='mb-2'>
-            Are you sure you want to delete{' '}
+            Estas seguro que quieres eliminar{' '}
             <span className='font-bold'>{currentProduct.name}</span>?
             <br />
-            This action cannot be undone.
+            Esta accion no puede ser revertida.
           </p>
 
           <Label className='my-2'>
-            Product Name:
+            Nombre del producto:
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder='Enter product name to confirm deletion.'
+              placeholder='Escribe el nombre del producto para completar'
             />
           </Label>
 
           <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
+            <AlertTitle>Advertencia!</AlertTitle>
             <AlertDescription>
-              This operation cannot be rolled back.
+              Esta operacion no se puede deshacer.
             </AlertDescription>
           </Alert>
         </div>
       }
-      confirmText='Delete'
+      confirmText='Eliminar'
       destructive
     />
   )

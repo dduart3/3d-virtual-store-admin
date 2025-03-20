@@ -7,6 +7,8 @@ import { ProductsTable } from './components/table/products-table'
 import { ProductsProvider } from './context/products-context'
 import { ProductDialogs } from './components/dialogs/product-dialogs'
 
+
+
 export default function Products() {
   const headerContent = (
     <>
@@ -22,11 +24,19 @@ export default function Products() {
     <ProductsProvider>
       <Layout header={headerContent}>
         <div className='h-full flex flex-col'>
-          <div className='mb-4'>
-            <h2 className='text-2xl font-bold tracking-tight'>Lista de Productos</h2>
-            <p className='text-muted-foreground'>
-              Maneja tus productos aqui.
-            </p>
+
+
+
+
+
+          <div className='flex items-center justify-between mb-4'>
+            <div>
+              <h2 className='text-2xl font-bold tracking-tight'>Lista de Productos</h2>
+              <p className='text-muted-foreground'>
+                Maneja tus productos aqui.
+              </p>
+            </div>
+
           </div>
           <div className='flex-1 overflow-auto'>
             <ProductsTable columns={columns} />
@@ -37,3 +47,4 @@ export default function Products() {
     </ProductsProvider>
   )
 }
+
