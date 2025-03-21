@@ -60,7 +60,7 @@ export function useProducts(pagination: PaginationParams = { page: 1, pageSize: 
                 return map;
             }, {} as Record<string, Section>);
 
-            // Get models
+
             const productIds = products.map(product => product.id);
             const { data: models, error: modelsError } = await supabase
                 .from('models')

@@ -20,16 +20,26 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { PopulatedProduct } from '../../types/products'
-import { toast } from '@/hooks/use-toast'
 import { useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useSections } from '@/modules/sections/hooks/use-sections'
+import { toast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query'
+
 
 const productFormSchema = z.object({
   name: z.string().min(1, 'Nombre es requerido'),
   description: z.string().min(1, 'Descripcion es requerido'),
-  price: z.string().min(1, 'Precio es requerido'),
-  stock: z.string().min(1, 'Stock es requerido'),
+  price: z.string()
+    .min(1, 'Precio es requerido')
+    .refine((val) => parseFloat(val) >= 0, {
+      message: 'El precio no puede ser negativo',
+    }),
+  stock: z.string()
+    .min(1, 'Stock es requerido')
+    .refine((val) => parseInt(val) >= 0, {
+      message: 'El stock no puede ser negativo',
+    }),
   section_id: z.string().min(1, 'Seccion es requerido'),
 })
 
@@ -42,8 +52,10 @@ interface Props {
   onProductUpdated?: () => void
 }
 
-export function ProductEditDialog({ open, onOpenChange, currentProduct, onProductUpdated }: Props) {
+export function ProductEditDialog({ open, onOpenChange, currentProduct }: Props) {
+  const queryClient = useQueryClient();
   const { sections, isLoading, refreshSections } = useSections();
+
   const dialogOpenedRef = useRef(false);
 
   const form = useForm<ProductFormValues>({
@@ -59,6 +71,18 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct, onProduc
 
 
   useEffect(() => {
+    if (currentProduct) {
+      form.reset({
+        name: currentProduct.name,
+        description: currentProduct.description,
+        price: currentProduct.price.toString(),
+        stock: currentProduct.stock.toString(),
+        section_id: currentProduct.section_id,
+      });
+    }
+  }, [currentProduct, form]);
+
+  useEffect(() => {
     if (open && !dialogOpenedRef.current) {
       refreshSections();
       dialogOpenedRef.current = true;
@@ -71,7 +95,8 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct, onProduc
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-  
+
+
       const { error } = await supabase
         .from('products')
         .update({
@@ -80,24 +105,23 @@ export function ProductEditDialog({ open, onOpenChange, currentProduct, onProduc
           price: parseFloat(data.price),
           stock: parseInt(data.stock),
           section_id: data.section_id,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+
         })
         .eq('id', currentProduct.id);
+
 
       if (error) {
         throw new Error(error.message);
       }
 
-
       onOpenChange(false);
-
-      if (onProductUpdated) {
-        onProductUpdated();
-      }
+      queryClient.invalidateQueries({ queryKey: ['products-populated'] });
 
       toast({
         title: 'Producto actualizado',
         description: 'El producto se ha actualizado correctamente.',
+        variant: 'success',
       });
     } catch (error) {
       console.error('Error updating product:', error);

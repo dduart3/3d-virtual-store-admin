@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { PopulatedProduct } from '../../types/products'
+import { supabase } from '@/lib/supabase'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
   open: boolean
@@ -15,21 +17,35 @@ interface Props {
 
 export function ProductDeleteDialog({ open, onOpenChange, currentProduct }: Props) {
   const [value, setValue] = useState('')
+  const queryClient = useQueryClient()
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (value.trim() !== currentProduct.name) return
 
-    onOpenChange(false)
-    toast({
-      title: 'The following product has been deleted:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>
-            {JSON.stringify(currentProduct, null, 2)}
-          </code>
-        </pre>
-      ),
-    })
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', currentProduct.id)
+
+      if (error) throw error
+
+      onOpenChange(false)
+      queryClient.invalidateQueries({ queryKey: ['products-populated'] })
+
+      toast({
+        title: 'Producto eliminado',
+        description: `El producto "${currentProduct.name}" ha sido eliminado correctamente.`,
+        variant: 'success',
+      })
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      toast({
+        title: 'Error',
+        description: 'Hubo un error al eliminar el producto.',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
