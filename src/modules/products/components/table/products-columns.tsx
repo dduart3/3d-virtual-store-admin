@@ -78,9 +78,9 @@ export const columns: ColumnDef<PopulatedProduct>[] = [
         cell: ({ row }) => {
             const status = row.getValue('status') as string
             const colorMap = {
-                'In Stock': 'bg-green-100 text-green-800 border-green-200',
-                'Low Stock': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                'Out of Stock': 'bg-red-100 text-red-800 border-red-200',
+                'Disponible': 'bg-green-100 text-green-800 border-green-200',
+                'Pocas Unidades': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                'Agotado': 'bg-red-100 text-red-800 border-red-200',
             }
             return (
                 <Badge variant='outline' className={colorMap[status as keyof typeof colorMap] || ''}>
