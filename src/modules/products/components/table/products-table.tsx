@@ -83,7 +83,7 @@ export function ProductsTable({ columns }: DataTableProps) {
                 <div className='h-full overflow-auto'>
                     {isLoading ? (
                         <div className='h-full flex items-center justify-center'>
-                            Loading products...
+                            Cargando productos...
                         </div>
                     ) : (
                         <Table>
@@ -126,7 +126,7 @@ export function ProductsTable({ columns }: DataTableProps) {
                                             colSpan={columns.length}
                                             className='h-24 text-center'
                                         >
-                                            No results.
+                                            No hubo resultados.
                                         </TableCell>
                                     </TableRow>
                                 )}

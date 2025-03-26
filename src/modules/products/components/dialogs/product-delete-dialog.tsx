@@ -60,7 +60,7 @@ export function ProductDeleteDialog({ open, onOpenChange, currentProduct }: Prop
             className='mr-1 inline-block stroke-destructive'
             size={18}
           />{' '}
-          Delete Product
+          Eliminar producto
         </span>
       }
       desc={

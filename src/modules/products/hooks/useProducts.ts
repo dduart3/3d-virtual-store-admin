@@ -83,7 +83,7 @@ export function useProducts(pagination: PaginationParams = { page: 1, pageSize: 
                         name: 'Unknown Section'
                     },
                     model: modelsMap[product.id] || null,
-                    status: product.stock > 20 ? "In Stock" : product.stock > 0 ? "Low Stock" : "Out of Stock"
+                    status: product.stock > 20 ? "Disponible" : product.stock > 0 ? "Pocas Unidades" : "Agotado"
                 };
                 return populated;
             });

@@ -174,7 +174,7 @@ export function ProductAddDialog({ open, onOpenChange }: Props) {
                                 name='stock'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Stock</FormLabel>
+                                        <FormLabel>Disponibilidad</FormLabel>
                                         <FormControl>
                                             <Input type='number' {...field} />
                                         </FormControl>

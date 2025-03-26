@@ -17,14 +17,14 @@ export const columns: ColumnDef<PopulatedProduct>[] = [
             <Checkbox
                 checked={table.getIsAllPageRowsSelected()}
                 onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label='Select all'
+                aria-label='Seleccionar todas'
             />
         ),
         cell: ({ row }) => (
             <Checkbox
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label='Select row'
+                aria-label='Seleccionar fila'
             />
         ),
         enableSorting: false,
@@ -70,7 +70,7 @@ export const columns: ColumnDef<PopulatedProduct>[] = [
     },
     {
         accessorKey: 'stock',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='Stock' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Disponibilidad' />,
     },
     {
         accessorKey: 'status',
