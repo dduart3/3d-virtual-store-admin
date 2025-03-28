@@ -21,7 +21,6 @@ export function ProductModel({
   scale
 }: ProductModelProps) {
   const modelRef = useRef<Group>(null);
-  const [hasError, setHasError] = useState(false);
 
   // Load the model if URL is provided
   const { scene } = useGLTF(modelUrl || "/models/placeholder.glb");

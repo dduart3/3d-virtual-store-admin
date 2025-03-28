@@ -125,7 +125,7 @@ export const useProductModels = (productId: string) => {
       if (error) throw error;
       
       // Parse JSONB fields into proper JavaScript types
-      const parsedData = data.map(model => ({
+      const parsedData = data.map((model: Model) => ({
         ...model,
         position: typeof model.position === 'string' ? JSON.parse(model.position) : model.position,
         rotation: typeof model.rotation === 'string' ? JSON.parse(model.rotation) : model.rotation,
@@ -327,7 +327,7 @@ export const useDeleteProduct = () => {
         .list(`products/${id}`);
         
       if (storageFiles && storageFiles.length > 0) {
-        const filePaths = storageFiles.map(file => `products/${id}/${file.name}`);
+        const filePaths = storageFiles.map((file: { name: string }) => `products/${id}/${file.name}`);
         const { error: storageError } = await supabase.storage
           .from('store')
           .remove(filePaths);
