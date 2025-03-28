@@ -1,7 +1,7 @@
 import { createContext, useContext, ReactNode } from 'react'
 import { useAuth as useAuthHook } from '@/features/auth/hooks/use-auth'
 import { UserProfile } from '@/features/auth/types/auth-types'
-import { Session, User } from '@supabase/supabase-js'
+import { User } from '@supabase/supabase-js'
 import { UseMutationResult } from '@tanstack/react-query'
 
 // Define the auth context type

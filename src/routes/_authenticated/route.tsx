@@ -21,20 +21,16 @@ export const Route = createFileRoute('/_authenticated')({
     // Check for admin role
     const { data: profileData } = await supabase
     .from('profiles')
-    .select(`
-      *,
-      role:roles!role_id(*)
-    `)
+    .select(`*`)
     .eq('id', data.session.user.id)
     .single()
-    
-    if (profileData?.role?.name !== 'admin') {
+
+    if (profileData?.role_id !== 1) {
       throw redirect({
         to: '/unauthorized',
       })
     }
-  },
-  component: AuthenticatedLayout,
+  },  component: AuthenticatedLayout,
 })
 
 function AuthenticatedLayout() {

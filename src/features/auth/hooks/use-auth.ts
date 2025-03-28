@@ -56,17 +56,14 @@ export function useAuth() {
       if (data.user) {
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select(`
-            *,
-            role:roles!role_id(*)
-          `)
+          .select(`*`)
           .eq('id', data.user.id)
           .single()
         
         if (profileError) throw profileError
         
         // Check if user has admin role
-        if (profileData?.role?.name !== 'admin') {
+        if (profileData?.role_id !== 1) {
           await supabase.auth.signOut()
           throw new Error('Acceso denegado. Se necesita privilegios de administrador.')
         }
