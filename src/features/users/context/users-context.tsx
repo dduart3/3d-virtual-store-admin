@@ -1,40 +1,45 @@
-import React, { useState } from 'react'
-import useDialogState from '@/hooks/use-dialog-state'
-import { User } from '../data/schema'
-
-type UsersDialogType = 'invite' | 'add' | 'edit' | 'delete'
+import { createContext, useContext, useState, ReactNode } from "react";
+import { User } from "../data/schema";
 
 interface UsersContextType {
-  open: UsersDialogType | null
-  setOpen: (str: UsersDialogType | null) => void
-  currentRow: User | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<User | null>>
+  selectedUser: User | null;
+  setSelectedUser: (user: User | null) => void;
+  isUpdateUserOpen: boolean;
+  setIsUpdateUserOpen: (isOpen: boolean) => void;
+  isDeleteUserOpen: boolean;
+  setIsDeleteUserOpen: (isOpen: boolean) => void;
 }
 
-const UsersContext = React.createContext<UsersContextType | null>(null)
+const UsersContext = createContext<UsersContextType | undefined>(undefined);
 
-interface Props {
-  children: React.ReactNode
-}
-
-export default function UsersProvider({ children }: Props) {
-  const [open, setOpen] = useDialogState<UsersDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<User | null>(null)
+export function UsersProvider({ children }: { children: ReactNode }) {
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isUpdateUserOpen, setIsUpdateUserOpen] = useState(false);
+  const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
 
   return (
-    <UsersContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <UsersContext.Provider
+      value={{
+        selectedUser,
+        setSelectedUser,
+
+        isUpdateUserOpen,
+        setIsUpdateUserOpen,
+        isDeleteUserOpen,
+        setIsDeleteUserOpen,
+      }}
+    >
       {children}
-    </UsersContext>
-  )
+    </UsersContext.Provider>
+  );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useUsers = () => {
-  const usersContext = React.useContext(UsersContext)
-
-  if (!usersContext) {
-    throw new Error('useUsers has to be used within <UsersContext>')
+export function useUsersContext() {
+  const context = useContext(UsersContext);
+  if (context === undefined) {
+    throw new Error("useUsersContext must be used within a UsersProvider");
   }
-
-  return usersContext
+  return context;
 }
+
+export default UsersProvider;
