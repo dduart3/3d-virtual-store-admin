@@ -1,154 +1,116 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import { CreateUserInput, UpdateUserInput, User } from "../data/schema";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
+import { useToast } from '@/hooks/use-toast'
+import { CreateUserInput, UpdateUserInput, User } from '../data/schema'
 
 export function useUsers() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   // Fetch all users
   const usersQuery = useQuery({
-    queryKey: ["users"],
+    queryKey: ['users'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
 
       if (error) {
-        throw new Error(error.message);
+        throw new Error(error.message)
       }
 
-      return data as User[];
+      return data as User[]
     },
-  });
+  })
 
+  // Create a new user
   // Create a new user
   const createUser = useMutation({
     mutationFn: async (newUser: CreateUserInput) => {
-      // First, create auth user
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: newUser.email,
-        password: "password123", // Default password, should be changed by user
-        email_confirm: true,
-      });
-
-      if (authError) {
-        throw new Error(`Error al crear usuario: ${authError.message}`);
-      }
-
-      // Then create profile
-      const { data, error } = await supabase
-        .from("profiles")
-        .insert({
-          ...newUser,
-          id: authData.user.id,
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: newUser,
+      })
 
       if (error) {
-        throw new Error(`Error al crear perfil: ${error.message}`);
+        throw new Error(`Error al crear usuario: ${error.message}`)
       }
 
-      return data;
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] })
       toast({
-        title: "Usuario creado",
-        description: "El usuario ha sido creado exitosamente.",
-      });
+        title: 'Usuario creado',
+        description: 'El usuario ha sido creado exitosamente.',
+      })
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
-      });
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   // Update an existing user
   const updateUser = useMutation({
     mutationFn: async (user: UpdateUserInput) => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .update({
-          username: user.username,
-          email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone: user.phone,
-          address: user.address,
-          avatar_url: user.avatar_url,
-          role_id: user.role_id,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id)
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke('update-user', {
+        body: user,
+      })
 
       if (error) {
-        throw new Error(`Error al actualizar usuario: ${error.message}`);
+        throw new Error(`Error al actualizar usuario: ${error.message}`)
       }
 
-      return data;
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] })
       toast({
-        title: "Usuario actualizado",
-        description: "El usuario ha sido actualizado exitosamente.",
-      });
+        title: 'Usuario actualizado',
+        description: 'El usuario ha sido actualizado exitosamente.',
+      })
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
-      });
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   // Delete a user
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      // First delete the auth user
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
-
-      if (authError) {
-        throw new Error(`Error al eliminar usuario: ${authError.message}`);
-      }
-
-      // Then delete the profile
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", userId);
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId },
+      })
 
       if (error) {
-        throw new Error(`Error al eliminar perfil: ${error.message}`);
+        throw new Error(`Error al eliminar usuario: ${error.message}`)
       }
 
-      return userId;
+      return userId
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] })
       toast({
-        title: "Usuario eliminado",
-        description: "El usuario ha sido eliminado exitosamente.",
-      });
+        title: 'Usuario eliminado',
+        description: 'El usuario ha sido eliminado exitosamente.',
+      })
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
-      });
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   return {
     users: usersQuery.data || [],
@@ -158,5 +120,5 @@ export function useUsers() {
     createUser,
     updateUser,
     deleteUser,
-  };
+  }
 }
