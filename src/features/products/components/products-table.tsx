@@ -18,10 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import { DataTablePagination } from '../../../components/table/data-table-pagination'
-import { DataTableViewOptions } from '../../../components/table/data-table-view-options'
 import { DataTableToolbar } from '@/components/table/data-table-toolbar'
 
 interface DataTableProps<TData, TValue> {

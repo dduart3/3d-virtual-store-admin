@@ -3,15 +3,13 @@ import { z } from "zod";
 // Define roles enum
 export const UserRoles = {
   ADMIN: 1,
-  CUSTOMER: 2,
-  MANAGER: 3,
+  USER: 2,
 } as const;
 
 // Convert roles to array for select inputs
 export const userRoleOptions = [
   { label: "Administrador", value: UserRoles.ADMIN },
-  { label: "Cliente", value: UserRoles.CUSTOMER },
-  { label: "Gerente", value: UserRoles.MANAGER },
+  { label: "Usuario", value: UserRoles.USER },
 ];
 
 // Helper function to get role label

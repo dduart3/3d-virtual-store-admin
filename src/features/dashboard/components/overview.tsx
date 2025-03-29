@@ -57,14 +57,14 @@ export function Overview() {
       <BarChart data={data}>
         <XAxis
           dataKey='name'
+          tick={{ fontSize: 12 }}
           stroke='#888888'
-          fontSize={12}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
           stroke='#888888'
-          fontSize={12}
+          tick={{ fontSize: 12 }}
           tickLine={false}
           axisLine={false}
           tickFormatter={(value) => `$${value}`}

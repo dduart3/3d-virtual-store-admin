@@ -8,6 +8,8 @@ interface UsersContextType {
   setIsUpdateUserOpen: (isOpen: boolean) => void;
   isDeleteUserOpen: boolean;
   setIsDeleteUserOpen: (isOpen: boolean) => void;
+  isCreateUserOpen: boolean;
+  setIsCreateUserOpen: (isOpen: boolean) => void;
 }
 
 const UsersContext = createContext<UsersContextType | undefined>(undefined);
@@ -16,13 +18,15 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isUpdateUserOpen, setIsUpdateUserOpen] = useState(false);
   const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
+  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
 
   return (
     <UsersContext.Provider
       value={{
         selectedUser,
         setSelectedUser,
-
+        isCreateUserOpen,
+        setIsCreateUserOpen,
         isUpdateUserOpen,
         setIsUpdateUserOpen,
         isDeleteUserOpen,

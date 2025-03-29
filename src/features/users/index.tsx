@@ -9,6 +9,7 @@ import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
 import { useUsers } from './hooks/use-users'
 import { Loader } from '@/components/ui/loader'
+import { UsersPrimaryButtons } from './components/users-primary-buttons'
 
 export default function Users() {
   const { users, isLoading, error } = useUsers()
@@ -31,6 +32,7 @@ export default function Users() {
               Administra los usuarios y su información aquí.
             </p>
           </div>
+          <UsersPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           {isLoading ? (

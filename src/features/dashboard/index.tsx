@@ -190,7 +190,7 @@ export default function Dashboard() {
 
 const topNav = [
   {
-    title: 'Vista General',
+    title: 'Panel',
     href: '/',
     isActive: true,
     disabled: false,
@@ -202,15 +202,15 @@ const topNav = [
     disabled: false,
   },
   {
-    title: 'Products',
-    href: 'dashboard/products',
+    title: 'Productos',
+    href: '/products',
     isActive: false,
-    disabled: true,
+    disabled: false,
   },
   {
-    title: 'Settings',
-    href: 'dashboard/settings',
+    title: 'Configuración',
+    href: '/settings',
     isActive: false,
-    disabled: true,
+    disabled: false,
   },
 ]
