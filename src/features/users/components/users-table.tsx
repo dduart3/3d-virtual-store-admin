@@ -68,7 +68,7 @@ export function UsersTable({ columns, data }: DataTableProps) {
 
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} />
+      <DataTableToolbar placeholder='Filtrar usuarios...' columnId='username' table={table} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>

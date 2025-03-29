@@ -38,7 +38,7 @@ export function CommandMenu() {
       <CommandInput placeholder='Type a command or search...' />
       <CommandList>
         <ScrollArea type='hover' className='h-72 pr-1'>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>No se encontraron resultados.</CommandEmpty>
           {sidebarData.navGroups.map((group) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem, i) => {
@@ -78,15 +78,15 @@ export function CommandMenu() {
           <CommandSeparator />
           <CommandGroup heading='Theme'>
             <CommandItem onSelect={() => runCommand(() => setTheme('light'))}>
-              <IconSun /> <span>Light</span>
+              <IconSun /> <span>Claro</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme('dark'))}>
               <IconMoon className='scale-90' />
-              <span>Dark</span>
+              <span>Oscuro</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme('system'))}>
               <IconDeviceLaptop />
-              <span>System</span>
+              <span>Sistema</span>
             </CommandItem>
           </CommandGroup>
         </ScrollArea>

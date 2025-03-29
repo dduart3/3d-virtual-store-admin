@@ -32,9 +32,9 @@ export default function Dashboard() {
       {/* ===== Main ===== */}
       <Main>
         <div className='mb-2 flex items-center justify-between space-y-2'>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>Panel de Administración</h1>
           <div className='flex items-center space-x-2'>
-            <Button>Download</Button>
+            <Button>Descargar</Button>
           </div>
         </div>
         <Tabs
@@ -44,15 +44,12 @@ export default function Dashboard() {
         >
           <div className='w-full overflow-x-auto pb-2'>
             <TabsList>
-              <TabsTrigger value='overview'>Overview</TabsTrigger>
-              <TabsTrigger value='analytics' disabled>
-                Analytics
+              <TabsTrigger value='overview'>Vista General</TabsTrigger>
+              <TabsTrigger value='analytics'>
+                Analiticas
               </TabsTrigger>
               <TabsTrigger value='reports' disabled>
-                Reports
-              </TabsTrigger>
-              <TabsTrigger value='notifications' disabled>
-                Notifications
+                Reportes
               </TabsTrigger>
             </TabsList>
           </div>
@@ -182,6 +179,9 @@ export default function Dashboard() {
               </Card>
             </div>
           </TabsContent>
+          <TabsContent value='analytics'>
+            analytics papá
+          </TabsContent>
         </Tabs>
       </Main>
     </>
@@ -190,16 +190,16 @@ export default function Dashboard() {
 
 const topNav = [
   {
-    title: 'Overview',
-    href: 'dashboard/overview',
+    title: 'Vista General',
+    href: '/',
     isActive: true,
     disabled: false,
   },
   {
-    title: 'Customers',
-    href: 'dashboard/customers',
+    title: 'Usuarios',
+    href: '/users',
     isActive: false,
-    disabled: true,
+    disabled: false,
   },
   {
     title: 'Products',

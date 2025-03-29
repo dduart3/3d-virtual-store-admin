@@ -18,7 +18,7 @@ export const sidebarData: SidebarData = {
       title: 'General',
       items: [
         {
-          title: 'Dashboard',
+          title: 'Panel',
           url: '/',
           icon: IconLayoutDashboard,
         },
@@ -29,7 +29,7 @@ export const sidebarData: SidebarData = {
         },
         {
           title: 'Pedidos',
-          url: '/',
+          url: '/tasks',
           icon: IconChecklist,
         },
         {

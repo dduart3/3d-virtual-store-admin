@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import { DataTablePagination } from '../../../components/table/data-table-pagination'
 import { DataTableViewOptions } from '../../../components/table/data-table-view-options'
+import { DataTableToolbar } from '@/components/table/data-table-toolbar'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -57,18 +58,8 @@ export function ProductsTable<TData, TValue>({
   })
 
   return (
-    <div>
-      <div className="flex items-center justify-between py-4">
-        <Input
-          placeholder="Filtrar productos..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DataTableViewOptions table={table} />
-      </div>
+    <div className='space-y-4'>
+      <DataTableToolbar placeholder='Filtrar productos...' columnId='name' table={table} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

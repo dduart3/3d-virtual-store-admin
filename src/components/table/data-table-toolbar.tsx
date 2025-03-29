@@ -6,11 +6,15 @@ import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
 
 interface DataTableToolbarProps<TData> {
-  table: Table<TData>
+  table: Table<TData>,
+  placeholder?: string,
+  columnId?: string,
 }
 
 export function DataTableToolbar<TData>({
   table,
+  placeholder = 'Filtrar...',
+  columnId = 'name',
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -18,10 +22,10 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filtrar productos..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          placeholder={placeholder}
+          value={(table.getColumn(columnId)?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn(columnId)?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
