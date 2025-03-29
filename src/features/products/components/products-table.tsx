@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
-import { DataTablePagination } from './data-table-pagination'
-import { DataTableViewOptions } from './data-table-view-options'
+import { DataTablePagination } from '../../../components/table/data-table-pagination'
+import { DataTableViewOptions } from '../../../components/table/data-table-view-options'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

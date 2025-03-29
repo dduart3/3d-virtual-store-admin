@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUsersContext } from "../context/users-context";
-import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableColumnHeader } from "@/components/table/data-table-column-header";
 
 export const columns: ColumnDef<User>[] = [
   {

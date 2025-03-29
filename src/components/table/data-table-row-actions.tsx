@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useProducts } from '../context/products-context'
-import { ProductWithExtras } from '../data/schema'
+import { useProducts } from '../../features/products/context/products-context'
+import { ProductWithExtras } from '../../features/products/data/schema'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

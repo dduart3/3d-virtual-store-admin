@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Product, ProductWithExtras } from '../data/schema'
+import { ProductWithExtras } from '../data/schema'
 import {
   useUpdateProduct,
   useProductModels,
