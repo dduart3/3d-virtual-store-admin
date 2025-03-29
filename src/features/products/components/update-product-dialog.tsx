@@ -27,7 +27,7 @@ import {
   getProductModelUrl,
 } from '../hooks/useProducts'
 import { useSections } from '../hooks/useProducts'
-import { ProductViewerModal } from '../../model-viewer/ProductViewerModal'
+import { ProductViewerModal } from '../../product-viewer/ProductViewerModal'
 
 interface UpdateProductDialogProps {
   open: boolean

@@ -61,6 +61,8 @@ export function useUsers() {
         body: user,
       })
 
+      console.log(error)
+
       if (error) {
         throw new Error(`Error al actualizar usuario: ${error.message}`)
       }

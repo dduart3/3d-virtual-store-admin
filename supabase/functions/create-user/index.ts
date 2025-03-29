@@ -13,6 +13,20 @@ interface CreateUserInput {
 }
 
 Deno.serve(async (req) => {
+  // Set CORS headers
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*', // Allow all origins or specify your frontend URL
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
   // Create a Supabase client with the Auth context of the logged in user
   const supabaseClient = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
@@ -33,7 +47,7 @@ Deno.serve(async (req) => {
   if (userError || !user) {
     return new Response(JSON.stringify({ error: 'No autorizado, no hay un usuario autenticado' }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
+      headers: corsHeaders,
     });
   }
 
@@ -47,7 +61,7 @@ Deno.serve(async (req) => {
   if (profileError || !profile || profile.role_id !== 1) {
     return new Response(JSON.stringify({ error: 'Acceso denegado, se requiere rol de administrador' }), {
       status: 403,
-      headers: { 'Content-Type': 'application/json' },
+      headers: corsHeaders,
     });
   }
 
@@ -71,38 +85,42 @@ Deno.serve(async (req) => {
     if (authError) {
       return new Response(JSON.stringify({ error: `Error creando usuario: ${authError.message}` }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: corsHeaders,
       });
     }
 
-    // Create profile
-    const { data, error } = await supabaseAdmin
+    // Update profile with the provided user information
+    const { error } = await supabaseAdmin
       .from("profiles")
-      .insert({
-        ...newUser,
-        id: authData.user.id,
+      .update({
+        username: newUser.username,
+        first_name: newUser.first_name,
+        last_name: newUser.last_name,
+        phone: newUser.phone,
+        address: newUser.address,
+        avatar_url: newUser.avatar_url,
+        role_id: newUser.role_id,
       })
-      .select()
-      .single();
+      .eq("id", authData.user.id);
 
     if (error) {
-      // If profile creation fails, delete the auth user to avoid orphaned records
+      // If profile update fails, delete the auth user to avoid orphaned records
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
       
-      return new Response(JSON.stringify({ error: `Error creando perfil: ${error.message}` }), {
+      return new Response(JSON.stringify({ error: `Error actualizando perfil: ${error.message}` }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: corsHeaders,
       });
     }
 
-    return new Response(JSON.stringify({ data }), {
+    return new Response(JSON.stringify({ userId: authData.user.id }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: corsHeaders,
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: corsHeaders,
     });
   }
 });
