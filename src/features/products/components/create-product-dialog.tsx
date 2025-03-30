@@ -20,7 +20,7 @@ import {
 import { useState } from "react";
 import { useCreateProduct, useCreateModel } from "../hooks/useProducts";
 import { useSections } from "../hooks/useProducts";
-import { ProductViewerModal } from "../../product-viewer/ProductViewerModal";
+import { ProductViewerModal } from "../../product-viewer";
 
 interface CreateProductDialogProps {
   open: boolean;

@@ -10,7 +10,7 @@ import {
   Vignette,
 } from "@react-three/postprocessing";
 import { ProductModel } from "./ProductModel";
-import { useProductRotation } from "./hooks/useProductRotation";
+import { useProductRotation } from "../hooks/useProductRotation";
 
 interface ViewerSceneProps {
   modelUrl?: string;

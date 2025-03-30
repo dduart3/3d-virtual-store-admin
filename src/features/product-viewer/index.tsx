@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { ViewerScene } from './ViewerScene'
+import { ViewerScene } from './components/ViewerScene'
 import { ProductRotationProvider } from './context/product-rotation-context'
 
 interface ProductViewerModalProps {
