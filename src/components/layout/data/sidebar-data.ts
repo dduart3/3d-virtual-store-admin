@@ -28,8 +28,8 @@ export const sidebarData: SidebarData = {
           icon: IconPackages,
         },
         {
-          title: 'Pedidos',
-          url: '/tasks',
+          title: 'Órdenes',
+          url: '/orders',
           icon: IconChecklist,
         },
         {
