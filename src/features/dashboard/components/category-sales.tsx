@@ -24,7 +24,7 @@ export function CategorySales() {
   }
  
   const total = data?.reduce((sum, item) => sum + item.value, 0) || 0
- 
+
   return (
     <Card className="col-span-1 lg:col-span-3">
       <CardHeader>
