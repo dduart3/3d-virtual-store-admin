@@ -1,0 +1,17 @@
+name = "3d-virtual-store-admin"
+compatibility_date = "2024-03-31"
+
+[build]
+command = "yarn install --frozen-lockfile && yarn build"
+# If you need node polyfills:
+# node_compat = true
+
+[build.upload]
+dir = "dist"
+format = "modules"
+main = "./dist/index.js"
+
+# For client-side routing in React
+[[routes]]
+pattern = "/*"
+file = "/index.html"
