@@ -1,6 +1,0 @@
-name = "3d-virtual-store-admin"
-pages_build_output_dir = "dist"  # This is the critical line Pages looks for
-compatibility_date = "2024-03-31"
-
-[build]
-command = "yarn install --frozen-lockfile && yarn build"
