@@ -9,7 +9,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { IconHelp, IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
+import {  IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
 import { useAuth } from '@/context/auth-context'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { ChevronsUpDown } from 'lucide-react'
@@ -92,13 +92,7 @@ export function NavUser() {
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/help-center">
-              <IconHelp className='mr-2 size-4' />
-              <span>Centro de Ayuda</span>
-              <DropdownMenuShortcut>⌘H</DropdownMenuShortcut>
-            </Link>
-          </DropdownMenuItem>
+
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem

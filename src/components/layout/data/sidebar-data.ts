@@ -1,9 +1,9 @@
 import {
   IconChecklist,
-  IconLayoutDashboard,
-  IconMessages,
+  IconLayoutGrid,
   IconPackages,
   IconUsers,
+  IconGraph
 } from '@tabler/icons-react'
 import { type SidebarData } from '../types'
 
@@ -20,7 +20,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Panel',
           url: '/',
-          icon: IconLayoutDashboard,
+          icon: IconGraph,
         },
         {
           title: 'Productos',
@@ -33,10 +33,9 @@ export const sidebarData: SidebarData = {
           icon: IconChecklist,
         },
         {
-          title: 'Mensajes',
-          url: '/chats',
-          badge: '3',
-          icon: IconMessages,
+          title: 'Secciones',
+          url: '/sections',
+          icon: IconLayoutGrid,
         },
         {
           title: 'Usuarios',

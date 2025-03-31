@@ -1,8 +1,7 @@
 import { z } from 'zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import {  useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
@@ -66,10 +65,7 @@ export default function ProfileForm() {
     mode: 'onChange',
   })
 
-  const { fields, append } = useFieldArray({
-    name: 'urls',
-    control: form.control,
-  })
+
 
   function onSubmit(data: ProfileFormValues) {
     toast({
@@ -141,46 +137,12 @@ export default function ProfileForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
-              </FormDescription>
+
               <FormMessage />
             </FormItem>
           )}
         />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && 'sr-only')}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            className='mt-2'
-            onClick={() => append({ value: '' })}
-          >
-            Add URL
-          </Button>
-        </div>
+
         <Button type='submit'>Update profile</Button>
       </form>
     </Form>
