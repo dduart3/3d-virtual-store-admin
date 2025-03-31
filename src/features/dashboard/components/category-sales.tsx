@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCategorySales } from '../../orders/hooks/use-orders'
 import { Skeleton } from '@/components/ui/skeleton'
 
-// Colors for the pie chart
+// Colors for the donut chart
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82ca9d', '#ffc658']
 
 export function CategorySales() {
   const { data, isLoading } = useCategorySales()
-  
+ 
   if (isLoading) {
     return (
       <Card className="col-span-1 lg:col-span-3">
@@ -22,9 +22,9 @@ export function CategorySales() {
       </Card>
     )
   }
-  
+ 
   const total = data?.reduce((sum, item) => sum + item.value, 0) || 0
-  
+ 
   return (
     <Card className="col-span-1 lg:col-span-3">
       <CardHeader>
@@ -40,6 +40,7 @@ export function CategorySales() {
                 cy="50%"
                 labelLine={false}
                 outerRadius={100}
+                innerRadius={60} // This makes it a donut chart
                 fill="#8884d8"
                 dataKey="value"
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -48,22 +49,22 @@ export function CategorySales() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Ventas']}
               />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        
+       
         <div className="mt-4 space-y-2">
           <h4 className="text-sm font-medium">Resumen</h4>
           <div className="grid grid-cols-2 gap-2">
             {data?.map((category, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div 
-                    className="w-3 h-3 mr-2 rounded-full" 
+                  <div
+                    className="w-3 h-3 mr-2 rounded-full"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
                   <span className="text-sm">{category.name}</span>
