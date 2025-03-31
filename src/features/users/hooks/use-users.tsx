@@ -88,7 +88,7 @@ export function useUsers() {
   // Delete a user
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      const { data, error } = await supabase.functions.invoke('delete-user', {
+      const { error } = await supabase.functions.invoke('delete-user', {
         body: { userId },
       })
 
