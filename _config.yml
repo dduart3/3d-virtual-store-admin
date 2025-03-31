@@ -1,0 +1,5 @@
+build:
+  command: yarn install --frozen-lockfile && yarn build
+  environment:
+    NODE_VERSION: 18.17.1
+    YARN_VERSION: 3.6.3
