@@ -33,6 +33,7 @@ export function CreateProductDialog({
 }: CreateProductDialogProps) {
   // Form state
   const [formData, setFormData] = useState({
+    id: "",
     name: "",
     price: "",
     stock: "",
@@ -111,6 +112,7 @@ export function CreateProductDialog({
   // Reset form state
   const resetForm = () => {
     setFormData({
+      id: "",
       name: "",
       price: "",
       stock: "",
@@ -134,20 +136,30 @@ export function CreateProductDialog({
     e.preventDefault();
     setIsUploading(true);
     setError(null);
+    const idValidationRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
     
     try {
       // Validate required fields
       if (!formData.name || !formData.price || !formData.stock || !formData.section_id) {
-        throw new Error("Please fill in all required fields");
+        throw new Error("Por favor rellena todos los campos");
+      }
+
+      if(!idValidationRegex.test(formData.id)) {
+        throw new Error("El ID del producto no es válido. Debe contener solo letras minúsculas, números y guiones. Ejemplo: mi-producto-123");
       }
       
       if (!thumbnailFile) {
-        throw new Error("Please upload a thumbnail image");
+        throw new Error("Por favor sube una imagen para el producto");
+      }
+      
+      if (!modelFile) {
+        throw new Error("Por favor sube un modelo 3D para el producto");
       }
       
       // Create the product
       const newProduct = await createProduct.mutateAsync({
         product: {
+          id: formData.id,
           name: formData.name,
           price: parseFloat(formData.price),
           stock: parseInt(formData.stock),
@@ -172,8 +184,8 @@ export function CreateProductDialog({
       resetForm();
       onOpenChange(false);
     } catch (error) {
-      console.error("Error creating product:", error);
-      setError(error instanceof Error ? error.message : "Error creating product. Please try again.");
+      console.error("Error creando el producto:", error);
+      setError(error instanceof Error ? error.message : "Error creando el producto. Por favor intenta de nuevo.");
     } finally {
       setIsUploading(false);
     }
@@ -196,6 +208,21 @@ export function CreateProductDialog({
         )}
         
         <form onSubmit={handleSubmit} className="space-y-6">
+
+        <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="id" className="text-right">
+              ID
+            </Label>
+            <Input
+              id="id"
+              name="id"
+              value={formData.id}
+              onChange={handleInputChange}
+              className="col-span-3"
+              disabled={isUploading}
+              required
+            />
+          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
               Nombre
@@ -291,7 +318,7 @@ export function CreateProductDialog({
               <Input
                 id="thumbnail"
                 type="file"
-                accept="image/*"
+                accept=".webp"
                 onChange={handleThumbnailChange}
                 disabled={isUploading}
                 required
@@ -316,7 +343,7 @@ export function CreateProductDialog({
               <Input
                 id="model"
                 type="file"
-                accept=".glb,.gltf"
+                accept=".glb"
                 onChange={handleModelChange}
                 disabled={isUploading}
               />

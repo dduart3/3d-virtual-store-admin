@@ -194,7 +194,7 @@ export function ProductViewerModal({
                 <div className='space-y-2'>
                   <div className='flex justify-between'>
                     <Label htmlFor='position-x'>
-                      X: {position[0].toFixed(2)}
+                      Horizontal: {position[0].toFixed(2)}
                     </Label>
                     <Input
                       id='position-x'
@@ -221,7 +221,7 @@ export function ProductViewerModal({
                 <div className='space-y-2'>
                   <div className='flex justify-between'>
                     <Label htmlFor='position-y'>
-                      Y: {position[1].toFixed(2)}
+                      Vertical: {position[1].toFixed(2)}
                     </Label>
                     <Input
                       id='position-y'
@@ -248,7 +248,7 @@ export function ProductViewerModal({
                 <div className='space-y-2'>
                   <div className='flex justify-between'>
                     <Label htmlFor='position-z'>
-                      Z: {position[2].toFixed(2)}
+                      Adelante / Atrás: {position[2].toFixed(2)}
                     </Label>
                     <Input
                       id='position-z'
@@ -281,7 +281,7 @@ export function ProductViewerModal({
                 <div className='space-y-2'>
                   <div className='flex justify-between'>
                     <Label htmlFor='rotation-x'>
-                      X: {(rotation[0] * (180 / Math.PI)).toFixed(0)}°
+                      Eje X: {(rotation[0] * (180 / Math.PI)).toFixed(0)}°
                     </Label>
                     <Input
                       id='rotation-x'
@@ -311,7 +311,7 @@ export function ProductViewerModal({
                 <div className='space-y-2'>
                   <div className='flex justify-between'>
                     <Label htmlFor='rotation-y'>
-                      Y: {(rotation[1] * (180 / Math.PI)).toFixed(0)}°
+                      Eje Y: {(rotation[1] * (180 / Math.PI)).toFixed(0)}°
                     </Label>
                     <Input
                       id='rotation-y'
@@ -341,7 +341,7 @@ export function ProductViewerModal({
                 <div className='space-y-2'>
                   <div className='flex justify-between'>
                     <Label htmlFor='rotation-z'>
-                      Z: {(rotation[2] * (180 / Math.PI)).toFixed(0)}°
+                      Eje Z: {(rotation[2] * (180 / Math.PI)).toFixed(0)}°
                     </Label>
                     <Input
                       id='rotation-z'

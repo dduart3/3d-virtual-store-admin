@@ -26,6 +26,8 @@ export function DataTableViewOptions<TData>({
     'status': 'Estado',
     'sectionName': 'Sección',
     'thumbnailUrl': 'Imagen',
+    'user': "Cliente",
+    'created_at': "Fecha",
     // Add any other column IDs you might have
   }
 
