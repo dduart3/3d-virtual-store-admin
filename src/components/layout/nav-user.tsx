@@ -9,9 +9,9 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {  IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
+import {  IconLogout } from '@tabler/icons-react'
 import { useAuth } from '@/context/auth-context'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { ChevronsUpDown } from 'lucide-react'
 import { useSidebar } from '@/components/ui/sidebar'
 
