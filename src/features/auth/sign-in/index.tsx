@@ -8,9 +8,9 @@ export default function SignIn() {
         <div className='absolute inset-0 bg-zinc-900' />
         <div className='relative z-20 flex items-center gap-2 text-lg font-medium'>
           <svg  width="30" height="30" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" >
-            <circle cx="30" cy="30" r="29.5" stroke="rgb(255,255,255)" stroke-width="2" fill="none"/>
-            <circle cx="30" cy="30" r="20" stroke="rgb(255,255,255)" stroke-width="2" fill="none"/>
-            <circle cx="30" cy="30" r="10" stroke="rgb(255,255,255)" stroke-width="2" fill="none"/>
+            <circle cx="30" cy="30" r="29.5" stroke="rgb(255,255,255)" strokeWidth="2" fill="none"/>
+            <circle cx="30" cy="30" r="20" stroke="rgb(255,255,255)" strokeWidth="2" fill="none"/>
+            <circle cx="30" cy="30" r="10" stroke="rgb(255,255,255)" strokeWidth="2" fill="none"/>
           </svg>
           Uribe's Boutique
         </div>

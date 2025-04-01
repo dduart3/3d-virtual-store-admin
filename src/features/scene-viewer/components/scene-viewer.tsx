@@ -73,7 +73,7 @@ export default function SceneViewer({
           powerPreference: 'high-performance'
         }}
       >
-        <Environment preset="city"/>
+        <Environment preset="dawn"/>
         <SceneCamera 
           initialPosition={initialCameraPosition}
           initialTarget={initialCameraLookAt}

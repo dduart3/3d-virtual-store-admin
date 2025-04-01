@@ -17,33 +17,21 @@ function Logo3D() {
   return (
     <group ref={groupRef}>
       {/* Outer ring - thick donut */}
-      <mesh>
+      <mesh castShadow>
         <torusGeometry args={[1, 0.1, 64, 128]} />
-        <meshStandardMaterial
-          color='white'
-          metalness={1}
-          side={THREE.DoubleSide}
-        />
+        <meshStandardMaterial color='white' metalness={1} roughness={0} />
       </mesh>
 
       {/* Middle ring */}
       <mesh>
         <torusGeometry args={[0.7, 0.1, 64, 128]} />
-        <meshStandardMaterial
-          color='white'
-          metalness={1}
-          side={THREE.DoubleSide}
-        />
+        <meshStandardMaterial color='white' metalness={1} roughness={0} />
       </mesh>
 
       {/* Inner ring */}
       <mesh>
         <torusGeometry args={[0.35, 0.1, 64, 128]} />
-        <meshStandardMaterial
-          color='white'
-          metalness={1}
-          side={THREE.DoubleSide}
-        />
+        <meshStandardMaterial color='white' metalness={1} roughness={0} />
       </mesh>
     </group>
   )
@@ -54,7 +42,7 @@ export function Logo() {
     <div className='flex h-full w-full items-center justify-center'>
       <Canvas camera={{ position: [0, 0, 3] }}>
         <Environment preset='city' />
-        <ambientLight intensity={2.5} /> {/* Increased ambient light */}
+        <ambientLight intensity={10} /> {/* Increased ambient light */}
         <pointLight position={[10, 10, 10]} intensity={1.5} />{' '}
         {/* Stronger point light */}
         <Logo3D />
