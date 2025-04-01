@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber"
 import { SceneCamera } from "./scene-camera"
 import { SceneLighting } from "./scene-lighting"
 import { StoreModel } from "./store-model"
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode } from "react"
 import { Ground } from "./ground"
 
 interface SceneViewerProps {
