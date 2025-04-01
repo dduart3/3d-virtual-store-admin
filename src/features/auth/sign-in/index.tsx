@@ -1,4 +1,4 @@
-import Logo from '@/assets/logo.svg'
+import { Logo } from './components/logo'
 import { UserAuthForm } from './components/user-auth-form'
 
 export default function SignIn() {
@@ -15,14 +15,10 @@ export default function SignIn() {
           Uribe's Boutique
         </div>
 
-        <img
-          src={Logo}
-          className='relative m-auto'
-          width={301}
-          height={80}
-          alt='Vite'
-        />
-
+         {/* This will now be centered and take up appropriate space */}
+         <div className="flex flex-1 items-center justify-center">
+          <Logo />
+        </div>
         <div className='relative z-20 mt-auto'>
         <blockquote className='space-y-2'>
             <p className='text-lg'>
