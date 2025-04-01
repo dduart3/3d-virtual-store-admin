@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { useCreateSection } from "../hooks/use-sections"
+import { useCreateSection, useUploadSectionModel } from "../hooks/use-sections"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateSectionDialogProps {
@@ -24,31 +23,31 @@ export function CreateSectionDialog({
   onOpenChange,
 }: CreateSectionDialogProps) {
   // Form state
-  const [formData, setFormData] = useState({
-    id: "",
-    name: "",
-    description: "",
-  })
-
+  const [name, setName] = useState("")
+  const [sectionId, setSectionId] = useState("")
+  
   // File state
   const [modelFile, setModelFile] = useState<File | undefined>(undefined)
   
   // Loading and error states
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
+  const [isIdValid, setIsIdValid] = useState(true)
+  
   // Mutations
   const createSection = useCreateSection()
+  const uploadModel = useUploadSectionModel()
   const { toast } = useToast()
-
-  // Handle form input changes
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  
+  // Reset form
+  const resetForm = () => {
+    setName("")
+    setSectionId("")
+    setModelFile(undefined)
+    setError(null)
+    setIsIdValid(true)
   }
-
+  
   // Handle model file selection
   const handleModelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -56,18 +55,26 @@ export function CreateSectionDialog({
       setModelFile(file)
     }
   }
-
-  // Reset form state
-  const resetForm = () => {
-    setFormData({
-      id: "",
-      name: "",
-      description: "",
-    })
-    setModelFile(undefined)
-    setError(null)
+  
+  // Validate section ID format (kebab-case)
+  const validateSectionId = (id: string) => {
+    const kebabCaseRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    return kebabCaseRegex.test(id);
   }
-
+  
+  // Handle section ID change
+  const handleSectionIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSectionId(value);
+    
+    // Only validate if there's a value
+    if (value) {
+      setIsIdValid(validateSectionId(value));
+    } else {
+      setIsIdValid(true); // Empty is considered valid until submission
+    }
+  }
+  
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -76,12 +83,16 @@ export function CreateSectionDialog({
     
     try {
       // Validate required fields
-      if (!formData.name) {
+      if (!name) {
         throw new Error("Por favor ingresa un nombre para la sección")
       }
       
-      if (!formData.id) {
+      if (!sectionId) {
         throw new Error("Por favor ingresa un ID para la sección")
+      }
+      
+      if (!validateSectionId(sectionId)) {
+        throw new Error("El ID de la sección debe estar en formato kebab-case (ejemplo: 'women-accessories')")
       }
       
       if (!modelFile) {
@@ -90,18 +101,20 @@ export function CreateSectionDialog({
       
       // Create the section
       await createSection.mutateAsync({
-        section: {
-          id: formData.id,
-          name: formData.name,
-          description: formData.description,
-          model: {
-            path: `/models/sections/${formData.id}/model.glb`,
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: 1,
-          }
-        },
-        modelFile,
+        id: sectionId,
+        name,
+        created_at: new Date().toISOString(),
+      })
+      
+      // Upload the model file
+      await uploadModel.mutateAsync({
+        sectionId,
+        file: modelFile
+      })
+      
+      toast({
+        title: "Sección creada",
+        description: "La sección ha sido creada exitosamente",
       })
       
       // Reset form and close dialog
@@ -114,7 +127,7 @@ export function CreateSectionDialog({
       setIsSubmitting(false)
     }
   }
-
+  
   return (
     <Dialog open={open} onOpenChange={(open) => {
       if (!open) resetForm()
@@ -137,45 +150,39 @@ export function CreateSectionDialog({
           
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="id" className="text-right">
-                ID
-              </Label>
-              <Input
-                id="id"
-                name="id"
-                value={formData.id}
-                onChange={handleInputChange}
-                className="col-span-3"
-                placeholder="mi-seccion-123"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Nombre
               </Label>
               <Input
                 id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="col-span-3"
                 required
               />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Descripción
+              <Label htmlFor="sectionId" className="text-right">
+                ID
               </Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="col-span-3"
-                rows={3}
-              />
+              <div className="col-span-3">
+                <Input
+                  id="sectionId"
+                  value={sectionId}
+                  onChange={handleSectionIdChange}
+                  className={!isIdValid ? "border-destructive" : ""}
+                  required
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Usa formato kebab-case (ejemplo: 'women-accessories')
+                </p>
+                {!isIdValid && (
+                  <p className="text-sm text-destructive mt-1">
+                    El ID debe estar en formato kebab-case
+                  </p>
+                )}
+              </div>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
@@ -186,12 +193,12 @@ export function CreateSectionDialog({
                 <Input
                   id="model"
                   type="file"
-                  accept=".glb,.gltf"
+                  accept=".glb"
                   onChange={handleModelChange}
                   required
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  Sube un modelo 3D en formato GLB o GLTF
+                  Sube un modelo 3D en formato GLB
                 </p>
               </div>
             </div>
@@ -201,7 +208,7 @@ export function CreateSectionDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isIdValid}>
               {isSubmitting ? "Creando..." : "Crear sección"}
             </Button>
           </DialogFooter>

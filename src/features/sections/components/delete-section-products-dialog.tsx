@@ -11,7 +11,7 @@ import {
 import { useSection, useDeleteSectionProducts } from "../hooks/use-sections"
 import { useToast } from "@/hooks/use-toast"
 import { Loader } from "@/components/ui/loader"
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
+import { AlertTriangle } from "lucide-react"
 
 interface DeleteSectionProductsDialogProps {
   open: boolean
@@ -69,7 +69,7 @@ export function DeleteSectionProductsDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <ExclamationTriangleIcon className="h-5 w-5" />
+            <AlertTriangle className="h-5 w-5" />
             Eliminar productos de la sección
           </DialogTitle>
           <DialogDescription>

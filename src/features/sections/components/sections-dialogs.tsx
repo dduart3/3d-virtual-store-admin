@@ -6,50 +6,52 @@ import { DeleteSectionProductsDialog } from './delete-section-products-dialog'
 import { SectionSceneEditor } from './section-scene-editor'
 
 export function SectionsDialogs() {
-  const { dialogOpen, closeDialog, selectedSectionId } = useSectionsContext()
+  const {
+    selectedSectionId,
+    isCreateDialogOpen,
+    setIsCreateDialogOpen,
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    isDeleteProductsDialogOpen,
+    setIsDeleteProductsDialogOpen,
+    isSceneEditorOpen,
+    setIsSceneEditorOpen,
+  } = useSectionsContext()
 
   return (
     <>
-      <CreateSectionDialog
-        open={dialogOpen.create}
-        onOpenChange={(open) => {
-          if (!open) closeDialog('create')
-        }}
+      <CreateSectionDialog 
+        open={isCreateDialogOpen} 
+        onOpenChange={setIsCreateDialogOpen} 
       />
-
+      
       {selectedSectionId && (
         <>
-          <EditSectionDialog
-            open={dialogOpen.edit}
-            onOpenChange={(open) => {
-              if (!open) closeDialog('edit')
-            }}
-            sectionId={selectedSectionId}
+          <EditSectionDialog 
+            open={isEditDialogOpen} 
+            onOpenChange={setIsEditDialogOpen} 
+            sectionId={selectedSectionId} 
           />
-
-          <DeleteSectionDialog
-            open={dialogOpen.delete}
-            onOpenChange={(open) => {
-              if (!open) closeDialog('delete')
-            }}
-            sectionId={selectedSectionId}
+          
+          <DeleteSectionDialog 
+            open={isDeleteDialogOpen} 
+            onOpenChange={setIsDeleteDialogOpen} 
+            sectionId={selectedSectionId} 
           />
-
-          <DeleteSectionProductsDialog
-            open={dialogOpen.deleteProducts}
-            onOpenChange={(open) => {
-              if (!open) closeDialog('deleteProducts')
-            }}
-            sectionId={selectedSectionId}
+          
+          <DeleteSectionProductsDialog 
+            open={isDeleteProductsDialogOpen} 
+            onOpenChange={setIsDeleteProductsDialogOpen} 
+            sectionId={selectedSectionId} 
           />
         </>
       )}
-
-      <SectionSceneEditor
-        open={dialogOpen.sceneEditor}
-        onOpenChange={(open) => {
-          if (!open) closeDialog('sceneEditor')
-        }}
+      
+      <SectionSceneEditor 
+        open={isSceneEditorOpen} 
+        onOpenChange={setIsSceneEditorOpen} 
       />
     </>
   )

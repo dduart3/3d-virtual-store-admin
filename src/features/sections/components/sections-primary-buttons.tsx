@@ -1,27 +1,19 @@
-import { Button } from "@/components/ui/button"
-import { PlusIcon, LayoutGridIcon } from "lucide-react"
-import { useSectionsContext } from "../context/sections-context"
+import { Button } from '@/components/ui/button'
+import { PlusCircle, Box } from 'lucide-react'
+import { useSectionsContext } from '../context/sections-context'
 
 export function SectionsPrimaryButtons() {
-  const { openDialog } = useSectionsContext()
+  const { setIsCreateDialogOpen, setIsSceneEditorOpen } = useSectionsContext()
 
   return (
-    <div className="flex items-center gap-2">
-      <Button 
-        onClick={() => openDialog('create')}
-        className="flex items-center gap-2"
-      >
-        <PlusIcon className="h-4 w-4" />
-        <span>Nueva sección</span>
+    <div className='flex gap-2'>
+      <Button onClick={() => setIsSceneEditorOpen(true)}>
+        <Box className="mr-2 h-4 w-4" />
+        Editor de escena
       </Button>
-      
-      <Button 
-        variant="outline" 
-        onClick={() => openDialog('sceneEditor')}
-        className="flex items-center gap-2"
-      >
-        <LayoutGridIcon className="h-4 w-4" />
-        <span>Editor de escena</span>
+      <Button onClick={() => setIsCreateDialogOpen(true)}>
+        <PlusCircle className="mr-2 h-4 w-4" />
+        Nueva sección
       </Button>
     </div>
   )

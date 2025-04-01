@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { Section } from '../hooks/use-sections'
+import { Section } from '../data/schema'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,19 +22,11 @@ export const columns: ColumnDef<Section>[] = [
     header: 'Nombre',
   },
   {
-    accessorKey: 'description',
-    header: 'Descripción',
-    cell: ({ row }) => {
-      const description = row.getValue('description') as string
-      return description ? description : '-'
-    },
-  },
-  {
     accessorKey: 'created_at',
     header: 'Fecha de creación',
     cell: ({ row }) => {
       const date = row.getValue('created_at') as string
-      return new Date(date).toLocaleDateString()
+      return date ? new Date(date).toLocaleDateString() : '-'
     },
   },
   {
@@ -72,13 +64,13 @@ export const columns: ColumnDef<Section>[] = [
               Editar
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="text-destructive"
               onClick={handleDeleteProducts}
             >
               Eliminar productos
             </DropdownMenuItem>
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="text-destructive"
               onClick={handleDelete}
             >

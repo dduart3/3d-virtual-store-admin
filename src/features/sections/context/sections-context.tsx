@@ -3,56 +3,84 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 type DialogType = 'create' | 'edit' | 'delete' | 'deleteProducts' | 'sceneEditor'
 
 interface SectionsContextType {
-  dialogOpen: Record<DialogType, boolean>
-  openDialog: (dialog: DialogType) => void
-  closeDialog: (dialog: DialogType) => void
   selectedSectionId: string | null
   setSelectedSectionId: (id: string | null) => void
+  openDialog: (type: DialogType) => void
+  isCreateDialogOpen: boolean
+  setIsCreateDialogOpen: (open: boolean) => void
+  isEditDialogOpen: boolean
+  setIsEditDialogOpen: (open: boolean) => void
+  isDeleteDialogOpen: boolean
+  setIsDeleteDialogOpen: (open: boolean) => void
+  isDeleteProductsDialogOpen: boolean
+  setIsDeleteProductsDialogOpen: (open: boolean) => void
+  isSceneEditorOpen: boolean
+  setIsSceneEditorOpen: (open: boolean) => void
 }
 
 const SectionsContext = createContext<SectionsContextType | undefined>(undefined)
 
 export function useSectionsContext() {
   const context = useContext(SectionsContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useSectionsContext must be used within a SectionsProvider')
   }
   return context
 }
 
-interface SectionsProviderProps {
-  children: ReactNode
-}
-
-export default function SectionsProvider({ children }: SectionsProviderProps) {
-  const [dialogOpen, setDialogOpen] = useState<Record<DialogType, boolean>>({
-    create: false,
-    edit: false,
-    delete: false,
-    deleteProducts: false,
-    sceneEditor: false,
-  })
+export default function SectionsProvider({ children }: { children: ReactNode }) {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDeleteProductsDialogOpen, setIsDeleteProductsDialogOpen] = useState(false)
+  const [isSceneEditorOpen, setIsSceneEditorOpen] = useState(false)
 
-  const openDialog = (dialog: DialogType) => {
-    setDialogOpen((prev) => ({ ...prev, [dialog]: true }))
-  }
-
-  const closeDialog = (dialog: DialogType) => {
-    setDialogOpen((prev) => ({ ...prev, [dialog]: false }))
-    if (dialog === 'edit' || dialog === 'delete' || dialog === 'deleteProducts') {
-      setSelectedSectionId(null)
+  // Function to open a specific dialog
+  const openDialog = (type: DialogType) => {
+    // Close all dialogs first
+    setIsCreateDialogOpen(false)
+    setIsEditDialogOpen(false)
+    setIsDeleteDialogOpen(false)
+    setIsDeleteProductsDialogOpen(false)
+    setIsSceneEditorOpen(false)
+    
+    // Open the requested dialog
+    switch (type) {
+      case 'create':
+        setIsCreateDialogOpen(true)
+        break
+      case 'edit':
+        setIsEditDialogOpen(true)
+        break
+      case 'delete':
+        setIsDeleteDialogOpen(true)
+        break
+      case 'deleteProducts':
+        setIsDeleteProductsDialogOpen(true)
+        break
+      case 'sceneEditor':
+        setIsSceneEditorOpen(true)
+        break
     }
   }
 
   return (
     <SectionsContext.Provider
       value={{
-        dialogOpen,
-        openDialog,
-        closeDialog,
         selectedSectionId,
         setSelectedSectionId,
+        openDialog,
+        isCreateDialogOpen,
+        setIsCreateDialogOpen,
+        isEditDialogOpen,
+        setIsEditDialogOpen,
+        isDeleteDialogOpen,
+        setIsDeleteDialogOpen,
+        isDeleteProductsDialogOpen,
+        setIsDeleteProductsDialogOpen,
+        isSceneEditorOpen,
+        setIsSceneEditorOpen,
       }}
     >
       {children}

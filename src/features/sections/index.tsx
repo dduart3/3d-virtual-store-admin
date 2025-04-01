@@ -7,7 +7,7 @@ import { Loader } from '@/components/ui/loader'
 import { columns } from './components/sections-columns'
 import { SectionsDialogs } from './components/sections-dialogs'
 import { SectionsTable } from './components/sections-table'
-import SectionsProvider from './context/sections-context'
+import  SectionsProvider  from './context/sections-context'
 import { useSections } from './hooks/use-sections'
 import { SectionsPrimaryButtons } from './components/sections-primary-buttons'
 

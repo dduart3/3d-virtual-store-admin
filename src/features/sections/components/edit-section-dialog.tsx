@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { useSection, useUpdateSection } from "../hooks/use-sections"
+import { useSection, useUpdateSection, useUploadSectionModel } from "../hooks/use-sections"
 import { useToast } from "@/hooks/use-toast"
 import { Loader } from "@/components/ui/loader"
 
@@ -28,42 +27,29 @@ export function EditSectionDialog({
 }: EditSectionDialogProps) {
   // Fetch section data
   const { data: section, isLoading } = useSection(sectionId)
-  
+ 
   // Form state
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-  })
-  
+  const [name, setName] = useState("")
+ 
   // File state
   const [modelFile, setModelFile] = useState<File | undefined>(undefined)
-  
+ 
   // Loading and error states
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+ 
   // Mutations
   const updateSection = useUpdateSection()
+  const uploadModel = useUploadSectionModel()
   const { toast } = useToast()
-  
+ 
   // Initialize form with section data
   useEffect(() => {
     if (section) {
-      setFormData({
-        name: section.name,
-        description: section.description || "",
-      })
+      setName(section.name)
     }
   }, [section])
-  
-  // Handle form input changes
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-  
+ 
   // Handle model file selection
   const handleModelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -71,34 +57,40 @@ export function EditSectionDialog({
       setModelFile(file)
     }
   }
-  
+ 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)
-    
+   
     try {
       // Validate required fields
-      if (!formData.name) {
+      if (!name) {
         throw new Error("Por favor ingresa un nombre para la sección")
       }
-      
+     
       // Update the section
       await updateSection.mutateAsync({
         id: sectionId,
         section: {
-          name: formData.name,
-          description: formData.description,
+          name,
         },
-        modelFile,
       })
-      
+     
+      // Upload new model if provided
+      if (modelFile) {
+        await uploadModel.mutateAsync({
+          sectionId,
+          file: modelFile
+        })
+      }
+     
       toast({
         title: "Sección actualizada",
         description: "La sección ha sido actualizada correctamente",
       })
-      
+     
       // Close dialog
       onOpenChange(false)
     } catch (error) {
@@ -108,7 +100,7 @@ export function EditSectionDialog({
         setIsSubmitting(false)
     }
   }
-  
+ 
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -120,7 +112,7 @@ export function EditSectionDialog({
       </Dialog>
     )
   }
-  
+ 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -130,14 +122,14 @@ export function EditSectionDialog({
             Actualiza la información de la sección.
           </DialogDescription>
         </DialogHeader>
-        
+       
         <form onSubmit={handleSubmit}>
           {error && (
             <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md mb-4">
               {error}
             </div>
           )}
-          
+         
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
@@ -145,28 +137,13 @@ export function EditSectionDialog({
               </Label>
               <Input
                 id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="col-span-3"
                 required
               />
             </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Descripción
-              </Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="col-span-3"
-                rows={3}
-              />
-            </div>
-            
+           
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="model" className="text-right">
                 Modelo 3D
@@ -184,7 +161,7 @@ export function EditSectionDialog({
               </div>
             </div>
           </div>
-          
+         
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
