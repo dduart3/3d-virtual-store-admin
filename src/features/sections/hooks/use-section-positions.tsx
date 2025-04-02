@@ -80,35 +80,21 @@ export function useSectionPositions() {
   // Save positions to database
   const savePositions = useCallback(async () => {
     try {
-      // Update each section in the database
+      // Update each section's model in the database
       const updates = Object.entries(sectionPositions).map(async ([id, { position, rotation }]) => {
         if (id === 'new-section') return Promise.resolve() // Skip the new section
         
-        // First get the current model data
-        const { data: sectionData, error: fetchError } = await supabase
-          .from('sections')
-          .select('model')
-          .eq('id', id)
-          .single()
-        
-        if (fetchError) throw fetchError
-        
-        // Merge the existing model data with the new position and rotation
-        const updatedModel = {
-          ...sectionData.model,
-          position,
-          rotation
-        }
-        
-        // Update the section with the merged model data
-        const { error: updateError } = await supabase
-          .from('sections')
+        // Update the model entry for this section
+        const { error } = await supabase
+          .from('models')
           .update({
-            model: updatedModel
+            position,
+            rotation
           })
-          .eq('id', id)
+          .eq('section_id', id)
+          .is('product_id', null)
         
-        if (updateError) throw updateError
+        if (error) throw error
       })
       
       await Promise.all(updates)

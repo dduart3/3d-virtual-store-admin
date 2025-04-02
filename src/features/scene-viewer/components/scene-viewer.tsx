@@ -46,9 +46,9 @@ export default function SceneViewer({
   editable = true,
   newSectionModel
 }: SceneViewerProps) {
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
-  
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)  
   const handleSelect = useCallback((id: string) => {
+    console.log(id)
     if (!editable) return
     setSelectedSectionId(id)
   }, [editable])
@@ -69,11 +69,9 @@ export default function SceneViewer({
         gl={{
           antialias: true,
           alpha: true,
-         
-          powerPreference: 'high-performance'
-        }}
+              }}
       >
-        <Environment preset="city"/>
+        <Environment preset="dawn"/>
         <SceneCamera 
           initialPosition={initialCameraPosition}
           initialTarget={initialCameraLookAt}

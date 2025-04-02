@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { CameraControlsHelp } from '@/features/scene-viewer/components/camera-controls-help'
-import { getSectionModelUrl, useSections } from '../hooks/use-sections'
+import {  useSectionsWithModels } from '../hooks/use-sections'
 import { useSectionPositions } from '../hooks/use-section-positions'
 import { useModelUpload } from '../hooks/use-model-upload'
 import { useToast } from '@/hooks/use-toast'
@@ -51,28 +51,11 @@ export function SectionSceneEditor({
   newSection,
   onSectionCreated
 }: SectionSceneEditorProps) {
-  const { data: sectionsData, refetch } = useSections()
+  // Use the new query that fetches sections with models
+  const { data: sectionsWithModels, refetch } = useSectionsWithModels()
   const { sectionPositions, updateSectionPosition, updateSectionRotation, initializePositions, savePositions } = useSectionPositions()
   const { uploadModel, isUploading, uploadProgress } = useModelUpload()
   const { toast } = useToast()
-  
-  // Transform the sections data to match the expected Section type
-  const sections: Section[] = sectionsData?.map(section => {
-    // If the section doesn't have a model property, provide default values
-    if (!('model' in section)) {
-      return {
-        ...section,
-        description: '',
-        model: {
-          path: getSectionModelUrl(section.id),
-          position: [0, 0, 0],
-          rotation: [0, 0, 0],
-          scale: 1
-        }
-      }
-    }
-    return section as Section
-  }) || []
   
   // State for new section model
   const [newSectionModel, setNewSectionModel] = useState<{
@@ -83,14 +66,12 @@ export function SectionSceneEditor({
   // State for saving
   const [isSaving, setIsSaving] = useState(false)
   
-
-// Initialize positions when sections are loaded
-useEffect(() => {
-  if (sections && sections.length > 0) {
-    initializePositions(sections)
-  }
-}, [sections]) // Remove initializePositions from the dependency array
-
+  // Initialize positions when sections are loaded
+  useEffect(() => {
+    if (sectionsWithModels && sectionsWithModels.length > 0) {
+      initializePositions(sectionsWithModels as Section[])
+    }
+  }, [sectionsWithModels]) // Remove initializePositions from the dependency array
   
   // Handle new section model preview
   useEffect(() => {
@@ -130,28 +111,34 @@ useEffect(() => {
         const sectionId = newSection.id
         
         // Upload the model file
-        const modelPath = await uploadModel(newSection.modelFile, sectionId)
+        await uploadModel(newSection.modelFile, sectionId)
         
         // Get the position and rotation for the new section
         const newPosition = sectionPositions['new-section']?.position || newSectionModel.position
         const newRotation = sectionPositions['new-section']?.rotation || [0, 0, 0]
         
         // Create the section in the database
-        const { error } = await supabase
+        const { error: sectionError } = await supabase
           .from('sections')
           .insert({
             id: sectionId,
             name: newSection.name,
             description: newSection.description || '',
-            model: {
-              path: modelPath,
-              position: newPosition,
-              rotation: newRotation,
-              scale: 1 // Default scale
-            }
           })
         
-        if (error) throw error
+        if (sectionError) throw sectionError
+        
+        // Create the model entry in the models table
+        const { error: modelError } = await supabase
+          .from('models')
+          .insert({
+            section_id: sectionId,
+            position: newPosition,
+            rotation: newRotation,
+            scale: 1
+          })
+        
+        if (modelError) throw modelError
         
         // Notify parent component
         if (onSectionCreated) {
@@ -211,7 +198,7 @@ useEffect(() => {
             </div>
           }>
             <LazySceneViewer
-              sections={sections}
+              sections={sectionsWithModels as Section[]}
               onSectionPositionChange={updateSectionPosition}
               onSectionRotationChange={updateSectionRotation}
               newSectionModel={newSectionModel || undefined}

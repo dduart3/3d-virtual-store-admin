@@ -300,3 +300,74 @@ export const getSectionModelUrl = (sectionId: string) => {
     .from('store')
     .getPublicUrl(`sections/${sectionId}/model.glb`).data.publicUrl;
 }
+
+
+// Update the useSectionsWithModels function to properly parse JSONB fields
+
+export function useSectionsWithModels() {
+  return useQuery({
+    queryKey: ['sections-with-models'],
+    queryFn: async () => {
+      // First get all sections
+      const { data: sections, error: sectionsError } = await supabase
+        .from('sections')
+        .select('*')
+      
+      if (sectionsError) throw sectionsError
+      
+      // Then get all models
+      const { data: models, error: modelsError } = await supabase
+        .from('models')
+        .select('*')
+        .is('product_id', null) // Only get models associated with sections, not products
+      
+      if (modelsError) throw modelsError
+      
+      // Combine the data
+      const sectionsWithModels = sections.map(section => {
+        // Find the model for this section
+        const model = models.find(m => m.section_id === section.id)
+        
+        // Default values if no model is found
+        let position: [number, number, number] = [0, 0, 0];
+        let rotation: [number, number, number] = [0, 0, 0];
+        let scale: number = 1;
+        
+        if (model) {
+          // Parse position
+          if (model.position) {
+            position = typeof model.position === 'string' 
+              ? JSON.parse(model.position) 
+              : model.position;
+          }
+          
+          // Parse rotation
+          if (model.rotation) {
+            rotation = typeof model.rotation === 'string' 
+              ? JSON.parse(model.rotation) 
+              : model.rotation;
+          }
+          
+          // Parse scale
+          if (model.scale !== undefined && model.scale !== null) {
+            scale = typeof model.scale === 'string' 
+              ? parseFloat(model.scale) 
+              : (typeof model.scale === 'number' ? model.scale : 1);
+          }
+        }
+        
+        return {
+          ...section,
+          model: {
+            path: getSectionModelUrl(section.id),
+            position: position as [number, number, number],
+            rotation: rotation as [number, number, number],
+            scale: scale
+          }
+        }
+      })
+      
+      return sectionsWithModels
+    }
+  })
+}
