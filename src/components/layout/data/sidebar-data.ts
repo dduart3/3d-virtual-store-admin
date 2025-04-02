@@ -1,6 +1,6 @@
 import {
   IconChecklist,
-  IconLayoutGrid,
+  //IconLayoutGrid,
   IconPackages,
   IconUsers,
   IconGraph
@@ -32,11 +32,12 @@ export const sidebarData: SidebarData = {
           url: '/orders',
           icon: IconChecklist,
         },
-        {
-          title: 'Secciones',
-          url: '/sections',
-          icon: IconLayoutGrid,
-        },
+
+        //{
+         // title: 'Secciones',
+          //url: '/sections',
+         // icon: IconLayoutGrid,
+       // },
         {
           title: 'Usuarios',
           url: '/users',

@@ -9,9 +9,9 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {  IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
+import {  IconLogout } from '@tabler/icons-react'
 import { useAuth } from '@/context/auth-context'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { ChevronsUpDown } from 'lucide-react'
 import { useSidebar } from '@/components/ui/sidebar'
 
@@ -78,20 +78,7 @@ export function NavUser() {
         <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link to="/settings">
-              <IconUser className='mr-2 size-4' />
-              <span>Perfil</span>
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/settings/account">
-              <IconSettings className='mr-2 size-4' />
-              <span>Configuración</span>
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </Link>
-          </DropdownMenuItem>
+     
 
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
