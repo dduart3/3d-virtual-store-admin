@@ -2,10 +2,10 @@ import { Canvas } from "@react-three/fiber"
 import { SceneCamera } from "./scene-camera"
 import { SceneLighting } from "./scene-lighting"
 import { StoreModel } from "./store-model"
-import { ReactNode, useState, useCallback } from "react"
+import { ReactNode, useState, useCallback, useEffect } from "react"
 import { Ground } from "./ground"
 import { TransformableModel } from "./transformable-model"
-import { Environment } from "@react-three/drei"
+import { Environment, OrbitControls } from "@react-three/drei"
 
 // Define the section type based on your codebase
 interface SectionModel {
@@ -46,36 +46,50 @@ export default function SceneViewer({
   editable = true,
   newSectionModel
 }: SceneViewerProps) {
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)  
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
+  
   const handleSelect = useCallback((id: string) => {
-    console.log(id)
     if (!editable) return
     setSelectedSectionId(id)
   }, [editable])
   
-  const handleCanvasClick = useCallback((e: any) => {
-    // Only deselect if clicking on the canvas background, not on a model
-    if (e.object?.type !== 'Mesh' && selectedSectionId) {
-      setSelectedSectionId(null)
+  // Use keyboard events for deselection
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Deselect when Escape key is pressed
+      if (e.key === 'Escape' && selectedSectionId) {
+        setSelectedSectionId(null)
+      }
+      
+      // Alternative: deselect when clicking with Ctrl key pressed
+      if (e.key === 'Control') {
+        setSelectedSectionId(null)
+      }
     }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [selectedSectionId])
   
   return (
     <div className="relative w-full h-full">
-      <Canvas 
-        camera={{ fov: 30 }} 
+      <Canvas
+        camera={{ fov: 30 }}
         shadows
-        onClick={handleCanvasClick}
         gl={{
           antialias: true,
           alpha: true,
-              }}
+        }}
       >
         <Environment preset="dawn"/>
-        <SceneCamera 
-          initialPosition={initialCameraPosition}
-          initialTarget={initialCameraLookAt}
-        />
+        {initialCameraPosition && initialCameraLookAt ? (
+          <SceneCamera
+            initialPosition={initialCameraPosition}
+            initialTarget={initialCameraLookAt}
+          />
+        ) : (
+          <OrbitControls />
+        )}
         <SceneLighting />
         <StoreModel />
         <Ground />
@@ -102,14 +116,14 @@ export default function SceneViewer({
             id="new-section"
             modelPath={newSectionModel.modelPath}
             position={newSectionModel.position}
-            onPositionChange={(_id, position) => {
+            onPositionChange={(id, position) => {
               if (onSectionPositionChange) {
-                onSectionPositionChange("new-section", position)
+                onSectionPositionChange(id, position)
               }
             }}
-            onRotationChange={(_id, rotation) => {
+            onRotationChange={(id, rotation) => {
               if (onSectionRotationChange) {
-                onSectionRotationChange("new-section", rotation)
+                onSectionRotationChange(id, rotation)
               }
             }}
             onSelect={handleSelect}
@@ -119,6 +133,15 @@ export default function SceneViewer({
         
         {children}
       </Canvas>
+      
+      {editable && (
+        <div className="absolute bottom-4 left-4 bg-black/70 text-white text-xs p-2 rounded">
+          <p>Selecciona un modelo para modificarlo</p>
+          <p>Tecla T: Modo mover</p>
+          <p>Tecla R: Modo rotar</p>
+          <p>Tecla CTRL: Deseleccionar modelo</p>
+        </div>
+      )}
     </div>
   )
 }

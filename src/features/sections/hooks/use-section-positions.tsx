@@ -92,7 +92,6 @@ export function useSectionPositions() {
             rotation
           })
           .eq('section_id', id)
-          .is('product_id', null)
         
         if (error) throw error
       })

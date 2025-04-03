@@ -4,52 +4,50 @@ import { supabase } from '@/lib/supabase'
 export function useModelUpload() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [uploadedModelPath, setUploadedModelPath] = useState<string | null>(null)
-  
+
   const uploadModel = async (file: File, sectionId: string) => {
+    setIsUploading(true)
+    setUploadProgress(0)
+    
     try {
-      setIsUploading(true)
-      setUploadProgress(0)
-      
-      // Always use 'model.glb' as the filename
-      const filePath = `store/sections/${sectionId}/model.glb`
-      
-      
-      // Upload the file without the onUploadProgress option
-      const { error } = await supabase.storage
-        .from('models')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true, // Overwrite if exists
-          
+      // Create a simulated progress update
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          const newProgress = prev + Math.random() * 10
+          return newProgress > 95 ? 95 : newProgress
         })
+      }, 300)
+      
+      // Upload the file to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('store')
+        .upload(`sections/${sectionId}/model.glb`, file, {
+          upsert: true,
+          cacheControl: '3600'
+        })
+      
+      clearInterval(progressInterval)
       
       if (error) throw error
       
-      // Set progress to 100% when upload completes
+      // Set progress to 100% when complete
       setUploadProgress(100)
       
-      // Get the public URL
-      const { data } = supabase.storage
-        .from('models')
-        .getPublicUrl(filePath)
-      
-      const modelPath = data.publicUrl
-      setUploadedModelPath(modelPath)
-      
-      return modelPath
+      return data
     } catch (error) {
       console.error('Error uploading model:', error)
       throw error
     } finally {
-      setIsUploading(false)
+      // Give a small delay before hiding the progress indicator
+      setTimeout(() => {
+        setIsUploading(false)
+      }, 500)
     }
   }
-  
+
   return {
     uploadModel,
     isUploading,
-    uploadProgress,
-    uploadedModelPath
+    uploadProgress
   }
 }

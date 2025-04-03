@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useCreateSection, useUploadSectionModel } from "../hooks/use-sections"
+import { useCreateSection, useUploadSectionModel, useUpsertSectionModel } from "../hooks/use-sections"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateSectionDialogProps {
@@ -37,6 +37,7 @@ export function CreateSectionDialog({
   // Mutations
   const createSection = useCreateSection()
   const uploadModel = useUploadSectionModel()
+  const upsertSectionModel = useUpsertSectionModel()
   const { toast } = useToast()
   
   // Reset form
@@ -110,6 +111,14 @@ export function CreateSectionDialog({
       await uploadModel.mutateAsync({
         sectionId,
         file: modelFile
+      })
+      
+      // Create the model entry in the models table
+      await upsertSectionModel.mutateAsync({
+        section_id: sectionId,
+        position: [0, 0, 0], // Default position
+        rotation: [0, 0, 0], // Default rotation
+        scale: 1, // Default scale
       })
       
       toast({

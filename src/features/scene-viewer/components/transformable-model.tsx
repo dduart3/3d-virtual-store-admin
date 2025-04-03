@@ -1,16 +1,17 @@
 import { useRef, useState, useEffect } from 'react'
+import { useGLTF } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
 import { TransformControls } from '@react-three/drei'
 import * as THREE from 'three'
-import { Model } from '@/components/model'
-import type { TransformControls as TransformControlsImpl } from 'three-stdlib'
-import { useFrame } from '@react-three/fiber'
+import { Group } from 'three'
+import { useTransformStore } from '../hooks/use-camera'
 
 interface TransformableModelProps {
   id: string
   modelPath: string
   position: [number, number, number]
   rotation?: [number, number, number]
-  scale?: number
+  scale?: number | [number, number, number]
   onPositionChange?: (id: string, position: [number, number, number]) => void
   onRotationChange?: (id: string, rotation: [number, number, number]) => void
   onSelect?: (id: string) => void
@@ -28,109 +29,104 @@ export function TransformableModel({
   onSelect,
   isSelected = false,
 }: TransformableModelProps) {
-  const modelRef = useRef<THREE.Group>(null)
-  const transformRef = useRef<TransformControlsImpl>(null)
-  const [mode, setMode] = useState<'translate' | 'rotate'>('translate')
-  
-  // State to track if the model is ready for transform controls
-  const [modelReady, setModelReady] = useState(false)
-  
-  // Store previous position and rotation for comparison
-  const prevPosition = useRef<[number, number, number]>(position)
-  const prevRotation = useRef<[number, number, number]>(rotation)
-  
-  // Check if model is ready after it's mounted
-  useEffect(() => {
-    if (modelRef.current) {
-      setModelReady(true)
-    }
-  }, [])
-  
-  // Handle keyboard shortcuts for transform mode
+  const groupRef = useRef<Group>(null)
+  const { scene } = useGLTF(modelPath)
+  const [transformMode, setTransformMode] = useState<'translate' | 'rotate'>('translate')
+  const [isDragging, setIsDragging] = useState(false)
+  const setTransforming = useTransformStore(state => state.setTransforming)
+
+  // Clone the scene to avoid sharing materials between instances
+  const model = scene.clone()
+
+  // Toggle transform mode with key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isSelected) return
       
       if (e.key === 'r') {
-        setMode('rotate')
-      } else if (e.key === 'g') {
-        setMode('translate')
+        setTransformMode('rotate')
+      } else if (e.key === 't') {
+        setTransformMode('translate')
       }
     }
-    
+
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isSelected])
-  
-  // Use useFrame to detect changes in position and rotation
+
+  // Update position and rotation when the transform controls are used
   useFrame(() => {
-    if (!modelRef.current || !isSelected) return
-    
-    const currentPosition: [number, number, number] = [
-      modelRef.current.position.x,
-      modelRef.current.position.y,
-      modelRef.current.position.z
-    ]
-    
-    const currentRotation: [number, number, number] = [
-      modelRef.current.rotation.x,
-      modelRef.current.rotation.y,
-      modelRef.current.rotation.z
-    ]
-    
-    // Check if position has changed
-    if (
-      currentPosition[0] !== prevPosition.current[0] ||
-      currentPosition[1] !== prevPosition.current[1] ||
-      currentPosition[2] !== prevPosition.current[2]
-    ) {
-      if (onPositionChange) {
-        onPositionChange(id, currentPosition)
+    if (groupRef.current && isSelected && !isDragging) {
+      const currentPosition = groupRef.current.position.toArray() as [number, number, number]
+      const currentRotation = [
+        groupRef.current.rotation.x,
+        groupRef.current.rotation.y,
+        groupRef.current.rotation.z
+      ] as [number, number, number]
+
+      // Check if position has changed
+      if (
+        Math.abs(currentPosition[0] - position[0]) > 0.001 ||
+        Math.abs(currentPosition[1] - position[1]) > 0.001 ||
+        Math.abs(currentPosition[2] - position[2]) > 0.001
+      ) {
+        onPositionChange?.(id, currentPosition)
       }
-      prevPosition.current = currentPosition
-    }
-    
-    // Check if rotation has changed
-    if (
-      currentRotation[0] !== prevRotation.current[0] ||
-      currentRotation[1] !== prevRotation.current[1] ||
-      currentRotation[2] !== prevRotation.current[2]
-    ) {
-      if (onRotationChange) {
-        onRotationChange(id, currentRotation)
+
+      // Check if rotation has changed
+      if (
+        Math.abs(currentRotation[0] - rotation[0]) > 0.001 ||
+        Math.abs(currentRotation[1] - rotation[1]) > 0.001 ||
+        Math.abs(currentRotation[2] - rotation[2]) > 0.001
+      ) {
+        onRotationChange?.(id, currentRotation)
       }
-      prevRotation.current = currentRotation
     }
   })
-  
+
   return (
-    <>
+    <group>
       <group
-        ref={modelRef}
-        position={new THREE.Vector3(...position)}
-        rotation={new THREE.Euler(...rotation)}
+        ref={groupRef}
+        position={position}
+        rotation={rotation as [number, number, number]}
+        scale={typeof scale === 'number' ? [scale, scale, scale] : scale}
         onClick={(e) => {
           e.stopPropagation()
-          if (onSelect) onSelect(id)
+          onSelect?.(id)
         }}
+        userData={{ type: 'section-model', id }}
       >
-        <Model
-          modelPath={modelPath}
-          scale={scale}
-        />
+        <primitive object={model} />
       </group>
-      
-      {isSelected && modelReady && modelRef.current && (
+
+      {isSelected && groupRef.current && (
         <TransformControls
-          ref={transformRef}
-          object={modelRef.current}
-          mode={mode}
-          size={0.75}
-          showX={true}
-          showY={true}
-          showZ={true}
+          object={groupRef.current}
+          mode={transformMode}
+          onMouseDown={() => {
+            setIsDragging(true)
+            setTransforming(true)
+          }}
+          onMouseUp={() => {
+            setIsDragging(false)
+            setTransforming(false)
+          }}
+          onObjectChange={() => {
+            if (groupRef.current) {
+              const newPosition = groupRef.current.position.toArray() as [number, number, number]
+              const newRotation = [
+                groupRef.current.rotation.x,
+                groupRef.current.rotation.y,
+                groupRef.current.rotation.z
+              ] as [number, number, number]
+              
+              onPositionChange?.(id, newPosition)
+              onRotationChange?.(id, newRotation)
+            }
+          }}
         />
       )}
-    </>
+    </group>
   )
 }

@@ -7,22 +7,14 @@ export const sectionSchema = z.object({
   created_at: z.string().optional(),
 })
 
+
 // Section model schema
 export const sectionModelSchema = z.object({
   id: z.number().optional(),
   section_id: z.string(),
-  product_id: z.string().optional(),
-  position: z.object({
-    x: z.number(),
-    y: z.number(),
-    z: z.number(),
-  }),
-  rotation: z.object({
-    x: z.number(),
-    y: z.number(),
-    z: z.number(),
-  }),
-  scale: z.number(), // Corrected: scale is just a number
+  position: z.tuple([z.number(), z.number(), z.number()]),
+  rotation: z.tuple([z.number(), z.number(), z.number()]),
+  scale: z.number(), // Scale is just a number
   label: z.string().optional(),
   created_at: z.string().optional(),
 })

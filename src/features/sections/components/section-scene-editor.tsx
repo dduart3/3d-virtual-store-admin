@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { CameraControlsHelp } from '@/features/scene-viewer/components/camera-controls-help'
-import {  useSectionsWithModels } from '../hooks/use-sections'
+import { useSectionsWithModels } from '../hooks/use-sections'
 import { useSectionPositions } from '../hooks/use-section-positions'
 import { useModelUpload } from '../hooks/use-model-upload'
 import { useToast } from '@/hooks/use-toast'
@@ -53,7 +53,13 @@ export function SectionSceneEditor({
 }: SectionSceneEditorProps) {
   // Use the new query that fetches sections with models
   const { data: sectionsWithModels, refetch } = useSectionsWithModels()
-  const { sectionPositions, updateSectionPosition, updateSectionRotation, initializePositions, savePositions } = useSectionPositions()
+  const { 
+    sectionPositions, 
+    updateSectionPosition, 
+    updateSectionRotation, 
+    initializePositions, 
+    savePositions 
+  } = useSectionPositions()
   const { uploadModel, isUploading, uploadProgress } = useModelUpload()
   const { toast } = useToast()
   
@@ -71,7 +77,7 @@ export function SectionSceneEditor({
     if (sectionsWithModels && sectionsWithModels.length > 0) {
       initializePositions(sectionsWithModels as Section[])
     }
-  }, [sectionsWithModels]) // Remove initializePositions from the dependency array
+  }, [sectionsWithModels, initializePositions])
   
   // Handle new section model preview
   useEffect(() => {
@@ -174,7 +180,7 @@ export function SectionSceneEditor({
         <DialogHeader className='mb-2'>
           <DialogTitle>Editor de escena</DialogTitle>
           <DialogDescription>
-            {newSection 
+            {newSection
               ? 'Coloca el modelo de la nueva sección en la escena.'
               : 'Edita la posición de las secciones en la tienda virtual.'}
           </DialogDescription>
@@ -183,9 +189,8 @@ export function SectionSceneEditor({
         <div className='relative flex-1 overflow-hidden rounded-md border'>
           {/* Camera controls help */}
           <CameraControlsHelp />
-          
-          {/* Upload progress indicator */}
-          {isUploading && (
+                    {/* Upload progress indicator */}
+                    {isUploading && (
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 bg-black/70 p-3 rounded-md w-64">
               <p className="text-white text-sm mb-1">Subiendo modelo...</p>
               <Progress value={uploadProgress} className="h-2" />
@@ -193,7 +198,7 @@ export function SectionSceneEditor({
           )}
           
           <Suspense fallback={
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex flex-1 items-center justify-center">
               <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
             </div>
           }>
@@ -213,8 +218,8 @@ export function SectionSceneEditor({
           <Button variant="outline" onClick={handleClose} disabled={isSaving || isUploading}>
             Cancelar
           </Button>
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={isSaving || isUploading}
             className="ml-2"
           >

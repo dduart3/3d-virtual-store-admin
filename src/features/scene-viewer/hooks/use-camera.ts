@@ -1,9 +1,22 @@
 import { useThree } from "@react-three/fiber"
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
+import { create } from "zustand"
+
+// Create a store to track if transform controls are active
+interface TransformState {
+  isTransforming: boolean
+  setTransforming: (isTransforming: boolean) => void
+}
+
+export const useTransformStore = create<TransformState>((set) => ({
+  isTransforming: false,
+  setTransforming: (isTransforming) => set({ isTransforming }),
+}))
 
 export function useSimpleCamera(initialPosition?: [number, number, number], initialTarget?: [number, number, number]) {
   const { camera, gl } = useThree()
+  const isTransforming = useTransformStore((state) => state.isTransforming)
   
   // Camera control sensitivity constants
   const PAN_SPEED = 0.05
@@ -13,11 +26,11 @@ export function useSimpleCamera(initialPosition?: [number, number, number], init
   // Simple camera state
   const state = useRef({
     // Camera position and target
-    position: initialPosition 
-      ? new THREE.Vector3(...initialPosition) 
+    position: initialPosition
+      ? new THREE.Vector3(...initialPosition)
       : new THREE.Vector3(-147.74, 35.37, -76.92),
-    target: initialTarget 
-      ? new THREE.Vector3(...initialTarget) 
+    target: initialTarget
+      ? new THREE.Vector3(...initialTarget)
       : new THREE.Vector3(-147.55, 10, -64.23),
     
     // Mouse state
@@ -56,6 +69,9 @@ export function useSimpleCamera(initialPosition?: [number, number, number], init
   // Set up event handlers
   useEffect(() => {
     const onMouseDown = (event: MouseEvent) => {
+      // Don't start camera movement if transform controls are active
+      if (isTransforming) return
+      
       if (event.button === 0) {
         state.current.isLeftDragging = true
       } else if (event.button === 2) {
@@ -75,6 +91,9 @@ export function useSimpleCamera(initialPosition?: [number, number, number], init
     }
     
     const onMouseMove = (event: MouseEvent) => {
+      // Skip camera movement if transform controls are active
+      if (isTransforming) return
+      
       const deltaX = event.clientX - state.current.lastX
       const deltaY = event.clientY - state.current.lastY
       state.current.lastX = event.clientX
@@ -130,6 +149,9 @@ export function useSimpleCamera(initialPosition?: [number, number, number], init
     }
     
     const onWheel = (event: WheelEvent) => {
+      // Skip zoom if transform controls are active
+      if (isTransforming) return
+      
       event.preventDefault()
       
       const direction = new THREE.Vector3()
@@ -162,7 +184,7 @@ export function useSimpleCamera(initialPosition?: [number, number, number], init
       gl.domElement.removeEventListener('wheel', onWheel)
       gl.domElement.removeEventListener('contextmenu', onContextMenu)
     }
-  }, [camera, gl.domElement])
+  }, [camera, gl.domElement, isTransforming])
   
   return {
     position: state.current.position,
