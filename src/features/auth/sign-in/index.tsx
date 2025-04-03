@@ -37,7 +37,23 @@ export default function SignIn() {
             </p>
           </div>
           <UserAuthForm />
-          
+          <p className='px-8 text-center text-sm text-muted-foreground'>
+            Al iniciar sesión, indicas que aceptas{' '}
+            <a
+              href='/terms'
+              className='underline underline-offset-4 hover:text-primary'
+            >
+              Términos de Servicio
+            </a>{' '}
+            y{' '}
+            <a
+              href='/privacy'
+              className='underline underline-offset-4 hover:text-primary'
+            >
+              Política de Privacidad
+            </a>
+            .
+          </p>
         </div>
       </div>
     </div>

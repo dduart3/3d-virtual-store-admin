@@ -1,3 +1,7 @@
+import { Link, useNavigate } from '@tanstack/react-router'
+import { IconLogout, IconUser, IconSettings } from '@tabler/icons-react'
+import { ChevronsUpDown } from 'lucide-react'
+import { useAuth } from '@/context/auth-context'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -9,10 +13,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {  IconLogout } from '@tabler/icons-react'
-import { useAuth } from '@/context/auth-context'
-import { useNavigate } from '@tanstack/react-router'
-import { ChevronsUpDown } from 'lucide-react'
 import { useSidebar } from '@/components/ui/sidebar'
 
 export function NavUser() {
@@ -43,7 +43,7 @@ export function NavUser() {
       onSuccess: () => {
         // Redirect to sign-in page after successful sign-out
         navigate({ to: '/sign-in', replace: true })
-      }
+      },
     })
   }
 
@@ -52,8 +52,8 @@ export function NavUser() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button 
-          className={`flex w-full items-center rounded-lg px-3 py-2 text-left transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer ${
+        <button
+          className={`flex w-full cursor-pointer items-center rounded-lg px-3 py-2 text-left transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
             isCollapsed ? 'justify-center' : 'gap-3'
           }`}
         >
@@ -61,7 +61,7 @@ export function NavUser() {
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          
+
           {/* Only show text content when not collapsed */}
           {!isCollapsed && (
             <div className='grid flex-1 text-sm leading-tight'>
@@ -69,23 +69,34 @@ export function NavUser() {
               <span className='text-xs text-muted-foreground'>{email}</span>
             </div>
           )}
-          
+
           {/* Only show the chevron when not collapsed */}
-          {!isCollapsed && <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />}
+          {!isCollapsed && (
+            <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
+          )}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='start' className='w-56'>
         <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-     
-
+          <DropdownMenuItem asChild>
+            <Link to='/settings'>
+              <IconUser className='mr-2 size-4' />
+              <span>Perfil</span>
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to='/settings/account'>
+              <IconSettings className='mr-2 size-4' />
+              <span>Configuración</span>
+              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={handleSignOut}
-          disabled={signOut.isPending}
-        >
+        <DropdownMenuItem onClick={handleSignOut} disabled={signOut.isPending}>
           <IconLogout className='mr-2 size-4' />
           <span>Cerrar Sesión</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>

@@ -129,5 +129,10 @@ const topNav = [
     isActive: false,
     disabled: false,
   },
- 
+  {
+    title: 'Configuración',
+    href: '/settings',
+    isActive: false,
+    disabled: false,
+  },
 ]
