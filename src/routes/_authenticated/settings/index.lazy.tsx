@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import SettingsProfile from '@/features/settings/profile'
+import SettingsAppearance from '@/features/settings/appearance'
 
 export const Route = createLazyFileRoute('/_authenticated/settings/')({
-  component: SettingsProfile,
+  component: SettingsAppearance,
 })

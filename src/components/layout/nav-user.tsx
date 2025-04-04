@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { IconLogout, IconUser, IconSettings } from '@tabler/icons-react'
+import { IconLogout, IconSettings } from '@tabler/icons-react'
 import { ChevronsUpDown } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

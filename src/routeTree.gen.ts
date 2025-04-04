@@ -49,9 +49,6 @@ const AuthenticatedProductsIndexLazyImport = createFileRoute(
 const AuthenticatedOrdersIndexLazyImport = createFileRoute(
   '/_authenticated/orders/',
 )()
-const AuthenticatedSettingsNotificationsLazyImport = createFileRoute(
-  '/_authenticated/settings/notifications',
-)()
 const AuthenticatedSettingsDisplayLazyImport = createFileRoute(
   '/_authenticated/settings/display',
 )()
@@ -211,17 +208,6 @@ const AuthenticatedOrdersIndexLazyRoute =
     import('./routes/_authenticated/orders/index.lazy').then((d) => d.Route),
   )
 
-const AuthenticatedSettingsNotificationsLazyRoute =
-  AuthenticatedSettingsNotificationsLazyImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedSettingsRouteLazyRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/settings/notifications.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
 const AuthenticatedSettingsDisplayLazyRoute =
   AuthenticatedSettingsDisplayLazyImport.update({
     id: '/display',
@@ -378,13 +364,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsDisplayLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
-    '/_authenticated/settings/notifications': {
-      id: '/_authenticated/settings/notifications'
-      path: '/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
-      parentRoute: typeof AuthenticatedSettingsRouteLazyImport
-    }
     '/_authenticated/orders/': {
       id: '/_authenticated/orders/'
       path: '/orders'
@@ -429,7 +408,6 @@ interface AuthenticatedSettingsRouteLazyRouteChildren {
   AuthenticatedSettingsAccountLazyRoute: typeof AuthenticatedSettingsAccountLazyRoute
   AuthenticatedSettingsAppearanceLazyRoute: typeof AuthenticatedSettingsAppearanceLazyRoute
   AuthenticatedSettingsDisplayLazyRoute: typeof AuthenticatedSettingsDisplayLazyRoute
-  AuthenticatedSettingsNotificationsLazyRoute: typeof AuthenticatedSettingsNotificationsLazyRoute
   AuthenticatedSettingsIndexLazyRoute: typeof AuthenticatedSettingsIndexLazyRoute
 }
 
@@ -441,8 +419,6 @@ const AuthenticatedSettingsRouteLazyRouteChildren: AuthenticatedSettingsRouteLaz
       AuthenticatedSettingsAppearanceLazyRoute,
     AuthenticatedSettingsDisplayLazyRoute:
       AuthenticatedSettingsDisplayLazyRoute,
-    AuthenticatedSettingsNotificationsLazyRoute:
-      AuthenticatedSettingsNotificationsLazyRoute,
     AuthenticatedSettingsIndexLazyRoute: AuthenticatedSettingsIndexLazyRoute,
   }
 
@@ -490,7 +466,6 @@ export interface FileRoutesByFullPath {
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
-  '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/orders': typeof AuthenticatedOrdersIndexLazyRoute
   '/products': typeof AuthenticatedProductsIndexLazyRoute
   '/sections': typeof AuthenticatedSectionsIndexLazyRoute
@@ -513,7 +488,6 @@ export interface FileRoutesByTo {
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
-  '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/orders': typeof AuthenticatedOrdersIndexLazyRoute
   '/products': typeof AuthenticatedProductsIndexLazyRoute
   '/sections': typeof AuthenticatedSectionsIndexLazyRoute
@@ -540,7 +514,6 @@ export interface FileRoutesById {
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
-  '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/_authenticated/orders/': typeof AuthenticatedOrdersIndexLazyRoute
   '/_authenticated/products/': typeof AuthenticatedProductsIndexLazyRoute
   '/_authenticated/sections/': typeof AuthenticatedSectionsIndexLazyRoute
@@ -567,7 +540,6 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
-    | '/settings/notifications'
     | '/orders'
     | '/products'
     | '/sections'
@@ -589,7 +561,6 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
-    | '/settings/notifications'
     | '/orders'
     | '/products'
     | '/sections'
@@ -614,7 +585,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
-    | '/_authenticated/settings/notifications'
     | '/_authenticated/orders/'
     | '/_authenticated/products/'
     | '/_authenticated/sections/'
@@ -707,7 +677,6 @@ export const routeTree = rootRoute
         "/_authenticated/settings/account",
         "/_authenticated/settings/appearance",
         "/_authenticated/settings/display",
-        "/_authenticated/settings/notifications",
         "/_authenticated/settings/"
       ]
     },
@@ -746,10 +715,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/settings/display": {
       "filePath": "_authenticated/settings/display.lazy.tsx",
-      "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/settings/notifications": {
-      "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
     },
     "/_authenticated/orders/": {
