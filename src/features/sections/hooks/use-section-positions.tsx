@@ -1,109 +1,103 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 
-// Define the section type based on your codebase
-interface SectionModel {
-  path: string
+interface SectionPosition {
   position: [number, number, number]
   rotation: [number, number, number]
   scale: number
 }
 
-interface Section {
-  id: string
-  name: string
-  description: string
-  model: SectionModel
-}
-
 export function useSectionPositions() {
-  const [sectionPositions, setSectionPositions] = useState<Record<string, {
-    position: [number, number, number],
-    rotation: [number, number, number]
-  }>>({})
-  
-  // Use a ref to track if positions have been initialized
-  const initialized = useRef(false)
-  
+  const [sectionPositions, setSectionPositions] = useState<Record<string, SectionPosition>>({})
+  const [initialPositions, setInitialPositions] = useState<Record<string, SectionPosition>>({})
+
+  // Initialize positions from loaded sections
+  const initializePositions = useCallback((sections: any[]) => {
+    const positions: Record<string, SectionPosition> = {}
+    
+    sections.forEach(section => {
+      if (section.model) {
+        positions[section.id] = {
+          position: section.model.position,
+          rotation: section.model.rotation,
+          scale: section.model.scale
+        }
+      }
+    })
+    
+    setSectionPositions(positions)
+    setInitialPositions(positions) // Store initial positions for comparison
+  }, [])
+
   // Update a section's position
-  const updateSectionPosition = useCallback((id: string, position: [number, number, number]) => {
+  const updateSectionPosition = useCallback((sectionId: string, position: [number, number, number]) => {
     setSectionPositions(prev => ({
       ...prev,
-      [id]: {
-        ...prev[id] || { rotation: [0, 0, 0] },
+      [sectionId]: {
+        ...prev[sectionId] || { rotation: [0, 0, 0], scale: 1 },
         position
       }
     }))
   }, [])
-  
+
   // Update a section's rotation
-  const updateSectionRotation = useCallback((id: string, rotation: [number, number, number]) => {
+  const updateSectionRotation = useCallback((sectionId: string, rotation: [number, number, number]) => {
     setSectionPositions(prev => ({
       ...prev,
-      [id]: {
-        ...prev[id] || { position: [0, 0, 0] },
+      [sectionId]: {
+        ...prev[sectionId] || { position: [0, 0, 0], scale: 1 },
         rotation
       }
     }))
   }, [])
-  
-  // Initialize positions from sections
-  const initializePositions = useCallback((sections: Section[]) => {
-    // Only initialize if not already initialized or if sections have changed
-    if (!initialized.current) {
-      const positions: Record<string, {
-        position: [number, number, number],
-        rotation: [number, number, number]
-      }> = {}
-      
-      sections.forEach(section => {
-        if (section.model) {
-          positions[section.id] = {
-            position: section.model.position,
-            rotation: section.model.rotation
-          }
-        }
-      })
-      
-      setSectionPositions(positions)
-      initialized.current = true
-    }
-  }, [])
-  
-  // Reset initialization state when component unmounts
-  useEffect(() => {
-    return () => {
-      initialized.current = false
-    }
-  }, [])
-  
-  // Save positions to database
+
+  // Save all positions to the database
   const savePositions = useCallback(async () => {
-    try {
-      // Update each section's model in the database
-      const updates = Object.entries(sectionPositions).map(async ([id, { position, rotation }]) => {
-        if (id === 'new-section') return Promise.resolve() // Skip the new section
-        
-        // Update the model entry for this section
-        const { error } = await supabase
-          .from('models')
-          .update({
-            position,
-            rotation
-          })
-          .eq('section_id', id)
-        
-        if (error) throw error
-      })
+    const updates = []
+    
+    // Check which positions have changed
+    for (const [sectionId, position] of Object.entries(sectionPositions)) {
+      // Skip the temporary 'new-section' ID
+      if (sectionId === 'new-section') continue
       
-      await Promise.all(updates)
-      return true
-    } catch (error) {
-      console.error('Error saving section positions:', error)
-      return false
+      // Check if this position has changed from the initial state
+      const initial = initialPositions[sectionId]
+      const hasChanged = !initial || 
+        !arraysEqual(position.position, initial.position) || 
+        !arraysEqual(position.rotation, initial.rotation) ||
+        position.scale !== initial.scale
+      
+      if (hasChanged) {
+        updates.push(
+          supabase
+            .from('models')
+            .upsert({
+              section_id: sectionId,
+              position: position.position,
+              rotation: position.rotation,
+              scale: position.scale
+            })
+        )
+      }
     }
-  }, [sectionPositions])
-  
+    
+    // Execute all updates in parallel
+    if (updates.length > 0) {
+      await Promise.all(updates)
+    }
+    
+    return true
+  }, [sectionPositions, initialPositions])
+
+  // Helper function to compare arrays
+  function arraysEqual(a: any[], b: any[]) {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false
+    }
+    return true
+  }
+
   return {
     sectionPositions,
     updateSectionPosition,

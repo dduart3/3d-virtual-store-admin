@@ -11,22 +11,30 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useSectionsContext } from '../context/sections-context'
+import { DataTableColumnHeader } from "@/components/table/data-table-column-header"
+import { formatDate } from "@/lib/utils"
 
 export const columns: ColumnDef<Section>[] = [
   {
     accessorKey: 'id',
-    header: 'ID',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
   },
   {
     accessorKey: 'name',
-    header: 'Nombre',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nombre" />
+    ),
   },
   {
     accessorKey: 'created_at',
-    header: 'Fecha de creación',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Fecha de creación" />
+    ),
     cell: ({ row }) => {
       const date = row.getValue('created_at') as string
-      return date ? new Date(date).toLocaleDateString() : '-'
+      return date ? formatDate(date) : '-'
     },
   },
   {
@@ -34,22 +42,18 @@ export const columns: ColumnDef<Section>[] = [
     cell: ({ row }) => {
       const section = row.original
       const { openDialog, setSelectedSectionId } = useSectionsContext()
-
       const handleEdit = () => {
         setSelectedSectionId(section.id)
         openDialog('edit')
       }
-
       const handleDelete = () => {
         setSelectedSectionId(section.id)
         openDialog('delete')
       }
-
       const handleDeleteProducts = () => {
         setSelectedSectionId(section.id)
         openDialog('deleteProducts')
       }
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

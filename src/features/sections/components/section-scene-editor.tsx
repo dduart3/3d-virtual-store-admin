@@ -39,7 +39,6 @@ interface SectionSceneEditorProps {
   newSection?: {
     id: string
     name: string
-    description?: string
     modelFile: File | null
   }
   onSectionCreated?: (sectionId: string) => void
@@ -79,16 +78,15 @@ export function SectionSceneEditor({
     }
   }, [sectionsWithModels, initializePositions])
   
-  // Handle new section model preview
   useEffect(() => {
     if (newSection?.modelFile && open) {
       // Create a temporary URL for the model file
       const objectUrl = URL.createObjectURL(newSection.modelFile)
       
-      // Set the new section model with a default position
+      // Set the new section model with a better default position
       setNewSectionModel({
         modelPath: objectUrl,
-        position: [-150, 0, -50] // Default position
+        position: [-142, -0.46, -58] // Position in the middle of the store
       })
       
       // Clean up the URL when the component unmounts
@@ -111,7 +109,7 @@ export function SectionSceneEditor({
       // First save all existing section positions
       await savePositions()
       
-      // If there's a new section, create it and upload the model
+      // If there's a new section, upload the model and update its position
       if (newSection && newSection.modelFile && newSectionModel && newSection.id) {
         // Use the section ID provided by the user
         const sectionId = newSection.id
@@ -123,21 +121,11 @@ export function SectionSceneEditor({
         const newPosition = sectionPositions['new-section']?.position || newSectionModel.position
         const newRotation = sectionPositions['new-section']?.rotation || [0, 0, 0]
         
-        // Create the section in the database
-        const { error: sectionError } = await supabase
-          .from('sections')
-          .insert({
-            id: sectionId,
-            name: newSection.name,
-            description: newSection.description || '',
-          })
-        
-        if (sectionError) throw sectionError
-        
         // Create the model entry in the models table
+        // Note: We're not creating the section again, just updating the model
         const { error: modelError } = await supabase
           .from('models')
-          .insert({
+          .upsert({
             section_id: sectionId,
             position: newPosition,
             rotation: newRotation,

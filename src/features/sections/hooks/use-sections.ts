@@ -106,27 +106,26 @@ export function useUpdateSection() {
   })
 }
 
-// Delete a section
 export function useDeleteSection() {
   const queryClient = useQueryClient()
   
   return useMutation({
     mutationFn: async (id: string) => {
-      // Delete the section
-      const { error } = await supabase
-        .from('sections')
-        .delete()
-        .eq('id', id)
-      
-      if (error) throw error
-      
-      // Delete associated models
+      // First, delete associated models
       const { error: modelsError } = await supabase
         .from('models')
         .delete()
         .eq('section_id', id)
       
       if (modelsError) throw modelsError
+      
+      // Then delete the section
+      const { error } = await supabase
+        .from('sections')
+        .delete()
+        .eq('id', id)
+      
+      if (error) throw error
       
       // Delete the model file from storage
       const { error: storageError } = await supabase.storage

@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useCreateSection, useUploadSectionModel, useUpsertSectionModel } from "../hooks/use-sections"
+import { useCreateSection, useUpsertSectionModel } from "../hooks/use-sections"
 import { useToast } from "@/hooks/use-toast"
+import { SectionSceneEditor } from "./section-scene-editor"
 
 interface CreateSectionDialogProps {
   open: boolean
@@ -34,9 +35,17 @@ export function CreateSectionDialog({
   const [error, setError] = useState<string | null>(null)
   const [isIdValid, setIsIdValid] = useState(true)
   
+  // Scene editor state
+  const [showSceneEditor, setShowSceneEditor] = useState(false)
+  const [createdSection, setCreatedSection] = useState<{
+    id: string;
+    name: string;
+    description?: string;
+    modelFile: File | null;
+  } | undefined>(undefined)
+  
   // Mutations
   const createSection = useCreateSection()
-  const uploadModel = useUploadSectionModel()
   const upsertSectionModel = useUpsertSectionModel()
   const { toast } = useToast()
   
@@ -47,6 +56,7 @@ export function CreateSectionDialog({
     setModelFile(undefined)
     setError(null)
     setIsIdValid(true)
+    setCreatedSection(undefined)
   }
   
   // Handle model file selection
@@ -107,122 +117,148 @@ export function CreateSectionDialog({
         created_at: new Date().toISOString(),
       })
       
-      // Upload the model file
-      await uploadModel.mutateAsync({
-        sectionId,
-        file: modelFile
+      // Set the created section for the scene editor
+      setCreatedSection({
+        id: sectionId,
+        name,
+        modelFile,
       })
       
-      // Create the model entry in the models table
-      await upsertSectionModel.mutateAsync({
-        section_id: sectionId,
-        position: [0, 0, 0], // Default position
-        rotation: [0, 0, 0], // Default rotation
-        scale: 1, // Default scale
-      })
-      
-      toast({
-        title: "Sección creada",
-        description: "La sección ha sido creada exitosamente",
-      })
-      
-      // Reset form and close dialog
-      resetForm()
+      // Close this dialog and open the scene editor
       onOpenChange(false)
+      setShowSceneEditor(true)
+      
     } catch (error) {
       console.error("Error creating section:", error)
       setError(error instanceof Error ? error.message : "Error al crear la sección. Por favor intenta de nuevo.")
-    } finally {
       setIsSubmitting(false)
     }
   }
   
+  // Handle section creation completion
+  const handleSectionCreated = async (sectionId: string) => {
+    try {
+      // Create the model entry in the models table with a better default position
+      await upsertSectionModel.mutateAsync({
+        section_id: sectionId,
+        position: [-142, -0.46, -58], // Position in the middle of the store
+        rotation: [0, 0, 0],
+        scale: 1,
+      })
+      
+      toast({
+        title: "Sección creada",
+        description: "La sección ha sido creada y posicionada exitosamente",
+      })
+      
+      // Reset form
+      resetForm()
+    } catch (error) {
+      console.error("Error finalizing section creation:", error)
+      toast({
+        title: "Error",
+        description: "Hubo un problema al finalizar la creación de la sección",
+        variant: "destructive"
+      })
+    }
+  }
+  
   return (
-    <Dialog open={open} onOpenChange={(open) => {
-      if (!open) resetForm()
-      onOpenChange(open)
-    }}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Crear nueva sección</DialogTitle>
-          <DialogDescription>
-            Añade una nueva sección a la tienda virtual.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md mb-4">
-              {error}
-            </div>
-          )}
+    <>
+      <Dialog open={open} onOpenChange={(open) => {
+        if (!open) resetForm()
+        onOpenChange(open)
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Crear nueva sección</DialogTitle>
+            <DialogDescription>
+              Añade una nueva sección a la tienda virtual.
+            </DialogDescription>
+          </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Nombre
-              </Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="col-span-3"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md mb-4">
+                {error}
+              </div>
+            )}
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="sectionId" className="text-right">
-                ID
-              </Label>
-              <div className="col-span-3">
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Nombre
+                </Label>
                 <Input
-                  id="sectionId"
-                  value={sectionId}
-                  onChange={handleSectionIdChange}
-                  className={!isIdValid ? "border-destructive" : ""}
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="col-span-3"
                   required
                 />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Usa formato kebab-case (ejemplo: 'women-accessories')
-                </p>
-                {!isIdValid && (
-                  <p className="text-sm text-destructive mt-1">
-                    El ID debe estar en formato kebab-case
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="sectionId" className="text-right">
+                  ID
+                </Label>
+                <div className="col-span-3">
+                  <Input
+                    id="sectionId"
+                    value={sectionId}
+                    onChange={handleSectionIdChange}
+                    className={!isIdValid ? "border-destructive" : ""}
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Usa formato kebab-case (ejemplo: 'women-accessories')
                   </p>
-                )}
+                  {!isIdValid && (
+                    <p className="text-sm text-destructive mt-1">
+                      El ID debe estar en formato kebab-case
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="model" className="text-right">
+                  Modelo 3D
+                </Label>
+                <div className="col-span-3">
+                  <Input
+                    id="model"
+                    type="file"
+                    accept=".glb"
+                    onChange={handleModelChange}
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Sube un modelo 3D en formato GLB
+                  </p>
+                </div>
               </div>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="model" className="text-right">
-                Modelo 3D
-              </Label>
-              <div className="col-span-3">
-                <Input
-                  id="model"
-                  type="file"
-                  accept=".glb"
-                  onChange={handleModelChange}
-                  required
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Sube un modelo 3D en formato GLB
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isSubmitting || !isIdValid}>
-              {isSubmitting ? "Creando..." : "Crear sección"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isSubmitting || !isIdValid}>
+                {isSubmitting ? "Creando..." : "Continuar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Scene Editor Dialog */}
+      <SectionSceneEditor
+        open={showSceneEditor}
+        onOpenChange={setShowSceneEditor}
+        newSection={createdSection}
+        onSectionCreated={handleSectionCreated}
+      />
+    </>
   )
 }
