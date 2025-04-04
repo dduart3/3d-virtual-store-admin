@@ -80,15 +80,9 @@ export function NavUser() {
         <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+
           <DropdownMenuItem asChild>
-            <Link to='/settings'>
-              <IconUser className='mr-2 size-4' />
-              <span>Perfil</span>
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to='/settings/account'>
+            <Link to='/settings/appearance'>
               <IconSettings className='mr-2 size-4' />
               <span>Configuración</span>
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>

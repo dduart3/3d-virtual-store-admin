@@ -28,6 +28,19 @@ export function DataTableViewOptions<TData>({
     'thumbnailUrl': 'Imagen',
     'user': "Cliente",
     'created_at': "Fecha",
+    'role_id': "Rol",
+    'full_name': "Nombre",
+    'username': "Usuario",
+    'email': "Correo",
+    'phone': "Teléfono",
+    'address': "Dirección",
+    'city': "Ciudad",
+    'state': "Estado",
+    'country': "País",
+    'zip_code': "Código postal",
+    'updated_at': "Fecha de actualización",
+    'deleted_at': "Fecha de eliminación",
+    'id': "ID",
     // Add any other column IDs you might have
   }
 

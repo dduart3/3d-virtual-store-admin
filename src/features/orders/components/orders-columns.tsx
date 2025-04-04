@@ -115,7 +115,8 @@ export const columns: ColumnDef<Order>[] = [
         </div>
       )
     },
-    enableSorting: false,
+    // Remove this line to enable sorting
+    // enableSorting: false,
   },
   {
     accessorKey: 'total',
@@ -129,7 +130,9 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "status",
-    header: "Estado",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Estado" />
+    ),
     cell: ({ row }) => {
       const status = row.getValue("status") as Order["status"]
       return <OrderStatusBadge status={status} />

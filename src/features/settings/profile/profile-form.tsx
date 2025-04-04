@@ -51,7 +51,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 // This can come from your database or API.
 const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
+  bio: 'Soy un desarrollador web.',
   urls: [
     { value: 'https://shadcn.com' },
     { value: 'http://twitter.com/shadcn' },
@@ -86,13 +86,12 @@ export default function ProfileForm() {
           name='username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Nombre de usuario</FormLabel>
               <FormControl>
                 <Input placeholder='shadcn' {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                Este es tu nombre público de usuario. Puede ser tu nombre real o un seudónimo. Solo puedes cambiarlo una vez cada 30 días.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -103,11 +102,11 @@ export default function ProfileForm() {
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Correo electrónico</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select a verified email to display' />
+                    <SelectValue placeholder='Selecciona un correo electrónico verificado para mostrar' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -117,8 +116,8 @@ export default function ProfileForm() {
                 </SelectContent>
               </Select>
               <FormDescription>
-                You can manage verified email addresses in your{' '}
-                <Link to='/'>email settings</Link>.
+                Puedes administrar direcciones de correo electrónico verificadas en tu{' '}
+                <Link to='/'>configuración de correo electrónico</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>

@@ -66,11 +66,10 @@ export function AccountForm() {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder='Your name' {...field} />
+                <Input placeholder='Tu nombre' {...field} />
               </FormControl>
               <FormDescription>
-                This is the name that will be displayed on your profile and in
-                emails.
+                Este es el nombre que se mostrará en tu perfil y en los correos electrónicos.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -78,7 +77,7 @@ export function AccountForm() {
         />
 
 
-        <Button type='submit'>Update account</Button>
+        <Button type='submit'>Actualizar cuenta</Button>
       </form>
     </Form>
   )
