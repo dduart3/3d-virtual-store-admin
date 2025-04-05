@@ -92,6 +92,17 @@ export function useAuth() {
     return profileQuery.data?.role?.name === roleName
   }
 
+  const resetPassword = useMutation({
+    mutationFn: async (email: string) => {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+      
+      if (error) throw error
+      return data
+    }
+  })
+
   return {
     user: sessionQuery.data?.user || null,
     profile: profileQuery.data || null,
@@ -100,5 +111,6 @@ export function useAuth() {
     isLoading: sessionQuery.isLoading || profileQuery.isLoading,
     signIn,
     signOut,
+    resetPassword,
   }
 }

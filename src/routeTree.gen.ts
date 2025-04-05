@@ -22,6 +22,8 @@ import { Route as auth500Import } from './routes/(auth)/500'
 
 // Create Virtual Routes
 
+const legalTermsLazyImport = createFileRoute('/(legal)/terms')()
+const legalPrivacyLazyImport = createFileRoute('/(legal)/privacy')()
 const errors503LazyImport = createFileRoute('/(errors)/503')()
 const errors500LazyImport = createFileRoute('/(errors)/500')()
 const errors404LazyImport = createFileRoute('/(errors)/404')()
@@ -77,6 +79,22 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+
+const legalTermsLazyRoute = legalTermsLazyImport
+  .update({
+    id: '/(legal)/terms',
+    path: '/terms',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(legal)/terms.lazy').then((d) => d.Route))
+
+const legalPrivacyLazyRoute = legalPrivacyLazyImport
+  .update({
+    id: '/(legal)/privacy',
+    path: '/privacy',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(legal)/privacy.lazy').then((d) => d.Route))
 
 const errors503LazyRoute = errors503LazyImport
   .update({
@@ -336,6 +354,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errors503LazyImport
       parentRoute: typeof rootRoute
     }
+    '/(legal)/privacy': {
+      id: '/(legal)/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof legalPrivacyLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/(legal)/terms': {
+      id: '/(legal)/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof legalTermsLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
@@ -462,6 +494,8 @@ export interface FileRoutesByFullPath {
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
+  '/privacy': typeof legalPrivacyLazyRoute
+  '/terms': typeof legalTermsLazyRoute
   '/': typeof AuthenticatedIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
@@ -484,6 +518,8 @@ export interface FileRoutesByTo {
   '/403': typeof errors403LazyRoute
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
+  '/privacy': typeof legalPrivacyLazyRoute
+  '/terms': typeof legalTermsLazyRoute
   '/': typeof AuthenticatedIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
@@ -510,6 +546,8 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404LazyRoute
   '/(errors)/500': typeof errors500LazyRoute
   '/(errors)/503': typeof errors503LazyRoute
+  '/(legal)/privacy': typeof legalPrivacyLazyRoute
+  '/(legal)/terms': typeof legalTermsLazyRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
@@ -536,6 +574,8 @@ export interface FileRouteTypes {
     | '/403'
     | '/404'
     | '/503'
+    | '/privacy'
+    | '/terms'
     | '/'
     | '/settings/account'
     | '/settings/appearance'
@@ -557,6 +597,8 @@ export interface FileRouteTypes {
     | '/403'
     | '/404'
     | '/503'
+    | '/privacy'
+    | '/terms'
     | '/'
     | '/settings/account'
     | '/settings/appearance'
@@ -581,6 +623,8 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/(legal)/privacy'
+    | '/(legal)/terms'
     | '/_authenticated/'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -606,6 +650,8 @@ export interface RootRouteChildren {
   errors404LazyRoute: typeof errors404LazyRoute
   errors500LazyRoute: typeof errors500LazyRoute
   errors503LazyRoute: typeof errors503LazyRoute
+  legalPrivacyLazyRoute: typeof legalPrivacyLazyRoute
+  legalTermsLazyRoute: typeof legalTermsLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -621,6 +667,8 @@ const rootRouteChildren: RootRouteChildren = {
   errors404LazyRoute: errors404LazyRoute,
   errors500LazyRoute: errors500LazyRoute,
   errors503LazyRoute: errors503LazyRoute,
+  legalPrivacyLazyRoute: legalPrivacyLazyRoute,
+  legalTermsLazyRoute: legalTermsLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -644,7 +692,9 @@ export const routeTree = rootRoute
         "/(errors)/403",
         "/(errors)/404",
         "/(errors)/500",
-        "/(errors)/503"
+        "/(errors)/503",
+        "/(legal)/privacy",
+        "/(legal)/terms"
       ]
     },
     "/_authenticated": {
@@ -700,6 +750,12 @@ export const routeTree = rootRoute
     },
     "/(errors)/503": {
       "filePath": "(errors)/503.lazy.tsx"
+    },
+    "/(legal)/privacy": {
+      "filePath": "(legal)/privacy.lazy.tsx"
+    },
+    "/(legal)/terms": {
+      "filePath": "(legal)/terms.lazy.tsx"
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",

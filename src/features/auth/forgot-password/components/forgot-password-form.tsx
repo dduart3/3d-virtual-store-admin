@@ -13,32 +13,60 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useAuth } from '@/features/auth/hooks/use-auth'
+import { toast } from '@/hooks/use-toast'
+import { Link } from '@tanstack/react-router'
 
 type ForgotFormProps = HTMLAttributes<HTMLDivElement>
 
 const formSchema = z.object({
   email: z
     .string()
-    .min(1, { message: 'Please enter your email' })
-    .email({ message: 'Invalid email address' }),
+    .min(1, { message: 'Por favor ingresa tu correo electrónico' })
+    .email({ message: 'Correo electrónico inválido' }),
 })
 
 export function ForgotForm({ className, ...props }: ForgotFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
-
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const { resetPassword } = useAuth()
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '' },
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+    resetPassword.mutate(data.email, {
+      onSuccess: () => {
+        setIsSubmitted(true)
+        toast({
+          title: "Correo enviado",
+          description: "Revisa tu bandeja de entrada para restablecer tu contraseña.",
+        })
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message || "Ocurrió un error al enviar el correo de recuperación.",
+          variant: "destructive",
+        })
+      }
+    })
+  }
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+  if (isSubmitted) {
+    return (
+      <div className="text-center space-y-4">
+        <h3 className="font-medium">¡Correo enviado!</h3>
+        <p className="text-sm text-muted-foreground">
+          Hemos enviado un enlace de recuperación a tu correo electrónico.
+          Por favor revisa tu bandeja de entrada.
+        </p>
+        <Button asChild className="w-full mt-4">
+          <Link to="/">Volver al inicio</Link>
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -51,16 +79,27 @@ export function ForgotForm({ className, ...props }: ForgotFormProps) {
               name='email'
               render={({ field }) => (
                 <FormItem className='space-y-1'>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Correo electrónico</FormLabel>
                   <FormControl>
-                    <Input placeholder='name@example.com' {...field} />
+                    <Input placeholder='nombre@ejemplo.com' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button className='mt-2' disabled={isLoading}>
-              Continue
+            <Button 
+              className='mt-2' 
+              disabled={resetPassword.isPending}
+              type="submit"
+            >
+              {resetPassword.isPending ? "Enviando..." : "Continuar"}
+            </Button>
+            <Button 
+              variant="link" 
+              className="mt-2 px-0" 
+              asChild
+            >
+              <Link to="/">Volver al inicio de sesión</Link>
             </Button>
           </div>
         </form>

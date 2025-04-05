@@ -33,7 +33,6 @@ export function NavUser() {
   const displayName = profile?.first_name
     ? `${profile.first_name} ${profile.last_name || ''}`
     : user?.email?.split('@')[0] || 'Usuario'
-
   const email = user?.email || ''
   const avatarUrl = profile?.avatar_url || ''
   const initials = getInitials(displayName)
@@ -61,15 +60,13 @@ export function NavUser() {
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-
           {/* Only show text content when not collapsed */}
           {!isCollapsed && (
-            <div className='grid flex-1 text-sm leading-tight'>
-              <span className='font-medium'>{displayName}</span>
-              <span className='text-xs text-muted-foreground'>{email}</span>
+            <div className='grid flex-1 min-w-0 text-sm leading-tight'>
+              <span className='font-medium truncate'>{displayName}</span>
+              <span className='text-xs text-muted-foreground truncate'>{email}</span>
             </div>
           )}
-
           {/* Only show the chevron when not collapsed */}
           {!isCollapsed && (
             <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
@@ -80,7 +77,6 @@ export function NavUser() {
         <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-
           <DropdownMenuItem asChild>
             <Link to='/settings/appearance'>
               <IconSettings className='mr-2 size-4' />

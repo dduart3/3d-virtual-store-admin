@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { Card } from '@/components/ui/card'
 import AuthLayout from '../auth-layout'
 import { ForgotForm } from './components/forgot-password-form'
@@ -12,21 +11,10 @@ export default function ForgotPassword() {
             Forgot Password
           </h1>
           <p className='text-sm text-muted-foreground'>
-            Enter your registered email and <br /> we will send you a link to
-            reset your password.
+            Introduce tu correo electrónico registrado y <br /> te enviaremos un link para reiniciar tu contraseña.
           </p>
         </div>
         <ForgotForm />
-        <p className='mt-4 px-8 text-center text-sm text-muted-foreground'>
-          Don't have an account?{' '}
-          <Link
-            to='/sign-up'
-            className='underline underline-offset-4 hover:text-primary'
-          >
-            Sign up
-          </Link>
-          .
-        </p>
       </Card>
     </AuthLayout>
   )
