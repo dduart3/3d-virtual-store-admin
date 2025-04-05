@@ -40,7 +40,7 @@ export function DashboardStats() {
 
       <StatCard
         title='Usuarios'
-        value={isUserGrowthLoading ? <Skeleton className="h-6 w-24" /> : `+${userGrowth?.totalUsers || 0}`}
+        value={isUserGrowthLoading ? <Skeleton className="h-6 w-24" /> : `${userGrowth?.totalUsers || 0}`}
         description={isUserGrowthLoading 
           ? <Skeleton className="h-4 w-32" /> 
           : `${formatPercentage(userGrowth?.percentageChange || 0)} desde el mes pasado`
@@ -65,7 +65,7 @@ export function DashboardStats() {
 
       <StatCard
         title='Ventas'
-        value={isOrderStatsLoading ? <Skeleton className="h-6 w-24" /> : `+${orderStats?.totalOrders || 0}`}
+        value={isOrderStatsLoading ? <Skeleton className="h-6 w-24" /> : `${orderStats?.totalOrders || 0}`}
         description={isRevenueLoading 
           ? <Skeleton className="h-4 w-32" /> 
           : `${formatPercentage(revenueComparison?.percentageChange || 0)} desde el mes pasado`
@@ -89,7 +89,7 @@ export function DashboardStats() {
 
       <StatCard
         title='Activos Ahora'
-        value={isOrderStatsLoading ? <Skeleton className="h-6 w-24" /> : `+${orderStats?.activeUsers || 0}`}
+        value={isOrderStatsLoading ? <Skeleton className="h-6 w-24" /> : `${orderStats?.activeUsers || 0}`}
         description="Usuarios con compras en las últimas 24h"
         icon={
           <svg
