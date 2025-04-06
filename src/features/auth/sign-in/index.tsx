@@ -1,8 +1,15 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { Logo } from './components/logo'
 import { UserAuthForm } from './components/user-auth-form'
+import { Button } from '@/components/ui/button'
 
 export default function SignIn() {
+  const navigate = useNavigate()
+
+  const handleOtpLogin = () => {
+    navigate({ to: '/otp' })
+  }
+
   return (
     <div className='container relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0'>
       <div className='relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex'>
@@ -41,7 +48,6 @@ export default function SignIn() {
           </svg>
           Uribe's Boutique
         </div>
-
         {/* This will now be centered and take up appropriate space */}
         <div className='flex flex-1 items-center justify-center'>
           <Logo />
@@ -69,6 +75,27 @@ export default function SignIn() {
             </p>
           </div>
           <UserAuthForm />
+          
+          {/* Divider */}
+          <div className='relative my-2'>
+            <div className='absolute inset-0 flex items-center'>
+              <span className='w-full border-t' />
+            </div>
+            <div className='relative flex justify-center text-xs uppercase'>
+              <span className='bg-background px-2 text-muted-foreground'>
+                O
+              </span>
+            </div>
+          </div>
+          
+          {/* OTP login button */}
+          <Button 
+            variant="outline" 
+            onClick={handleOtpLogin}
+          >
+            Iniciar sesión con código de un solo uso
+          </Button>
+          
           <p className='px-8 text-center text-sm text-muted-foreground'>
             Al iniciar sesión, indicas que aceptas{' '}
             <Link

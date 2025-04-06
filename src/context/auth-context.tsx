@@ -13,6 +13,8 @@ type AuthContextType = {
   isLoading: boolean
   signIn: UseMutationResult<any, Error, { email: string; password: string }, unknown>
   signOut: UseMutationResult<void, Error, void, unknown>
+  verifyOtp: UseMutationResult<any, Error, { email: string; token: string }, unknown>
+  requestOtp: UseMutationResult<any, Error, string, unknown>
 }
 
 // Create the context

@@ -1,10 +1,8 @@
-import { HTMLAttributes, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
-import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -13,83 +11,144 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import { PinInput, PinInputField } from '@/components/pin-input'
-
-type OtpFormProps = HTMLAttributes<HTMLDivElement>
+import { toast } from '@/hooks/use-toast'
+import { useAuth } from '@/context/auth-context'
+import { OtpInput } from './otp-input'
 
 const formSchema = z.object({
-  otp: z.string().min(1, { message: 'Please enter your otp code.' }),
+  otp: z.string().min(6, { message: 'El código debe tener 6 dígitos' }),
 })
 
-export function OtpForm({ className, ...props }: OtpFormProps) {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
-  const [disabledBtn, setDisabledBtn] = useState(true)
+interface OtpFormProps {
+  email: string
+  emailSent?: boolean
+}
 
+export function OtpForm({ email, emailSent = false }: OtpFormProps) {
+  const [countdown, setCountdown] = useState(60)
+  const [hasStartedCountdown, setHasStartedCountdown] = useState(emailSent)
+  const { verifyOtp, requestOtp } = useAuth()
+  const navigate = useNavigate()
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { otp: '' },
+    defaultValues: {
+      otp: '',
+    },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+  // Start countdown immediately if we're on this page
+  useEffect(() => {
+    // Initialize countdown when component mounts
+    setHasStartedCountdown(true)
+  }, [])
 
-    setTimeout(() => {
-      setIsLoading(false)
-      navigate({ to: '/' })
+  // Countdown timer
+  useEffect(() => {
+    if (!hasStartedCountdown) return
+    
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          return 0
+        }
+        return prev - 1
+      })
     }, 1000)
+    
+    return () => clearInterval(timer)
+  }, [hasStartedCountdown])
+
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    verifyOtp.mutate(
+      {
+        email,
+        token: data.otp,
+      },
+      {
+        onSuccess: () => {
+          // Navigate to dashboard on success
+          navigate({ to: '/', replace: true })
+          
+          toast({
+            title: 'Inicio de sesión exitoso',
+            description: '¡Bienvenido de nuevo!',
+          })
+        },
+        onError: (error) => {
+          toast({
+            title: 'Error',
+            description: error.message || 'Código inválido o expirado.',
+            variant: 'destructive',
+          })
+        }
+      }
+    )
+  }
+
+  function resendOtp() {
+    requestOtp.mutate(email, {
+      onSuccess: () => {
+        // Reset countdown and ensure it's running
+        setCountdown(60)
+        setHasStartedCountdown(true)
+        
+        toast({
+          title: 'Código reenviado',
+          description: 'Hemos enviado un nuevo código de verificación a tu correo electrónico.',
+        })
+      },
+      onError: (error) => {
+        toast({
+          title: 'Error',
+          description: error.message || 'Ocurrió un error al reenviar el código.',
+          variant: 'destructive',
+        })
+      }
+    })
   }
 
   return (
-    <div className={cn('grid gap-6', className)} {...props}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className='grid gap-2'>
-            <FormField
-              control={form.control}
-              name='otp'
-              render={({ field }) => (
-                <FormItem className='space-y-1'>
-                  <FormControl>
-                    <PinInput
-                      {...field}
-                      className='flex h-10 justify-between'
-                      onComplete={() => setDisabledBtn(false)}
-                      onIncomplete={() => setDisabledBtn(true)}
-                    >
-                      {Array.from({ length: 7 }, (_, i) => {
-                        if (i === 3)
-                          return <Separator key={i} orientation='vertical' />
-                        return (
-                          <PinInputField
-                            key={i}
-                            component={Input}
-                            className={`${form.getFieldState('otp').invalid ? 'border-red-500' : ''}`}
-                          />
-                        )
-                      })}
-                    </PinInput>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button className='mt-2' disabled={disabledBtn || isLoading}>
-              Verify
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+        <FormField
+          control={form.control}
+          name='otp'
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <OtpInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  length={6}
+                  disabled={verifyOtp.isPending}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type='submit' className='w-full' disabled={verifyOtp.isPending}>
+          {verifyOtp.isPending ? 'Verificando...' : 'Verificar código'}
+        </Button>
+        
+        {countdown > 0 ? (
+          <p className='text-center text-sm text-muted-foreground'>
+            Puedes solicitar un nuevo código en {countdown} segundos
+          </p>
+        ) : (
+          <Button
+            type='button'
+            variant='ghost'
+            className='w-full'
+            onClick={resendOtp}
+            disabled={requestOtp.isPending}
+          >
+            Reenviar código
+          </Button>
+        )}
+      </form>
+    </Form>
   )
 }

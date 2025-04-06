@@ -76,6 +76,66 @@ export function useAuth() {
     },
   })
 
+   // OTP verification mutation
+   const verifyOtp = useMutation({
+    mutationFn: async ({
+      email,
+      token
+    }: {
+      email: string
+      token: string
+    }) => {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: 'email',
+      })
+      
+      if (error) throw error
+      
+      // Check if user has admin role
+      if (data.user) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select(`*`)
+          .eq('id', data.user.id)
+          .single()
+        
+        if (profileError || !profileData) {
+          await supabase.auth.signOut()
+          throw new Error('No se encontró un perfil asociado a esta cuenta.')
+        }
+        
+        // Check if user has admin role
+        if (profileData.role_id !== 1) {
+          await supabase.auth.signOut()
+          throw new Error('Acceso denegado. Se necesita privilegios de administrador.')
+        }
+      }
+      
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth'] })
+    },
+  })
+
+  // Request OTP mutation
+  const requestOtp = useMutation({
+    mutationFn: async (email: string) => {
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false
+        }
+      })
+      
+      if (error) throw error
+      return data
+    }
+  })
+
+
   // Sign out mutation
   const signOut = useMutation({
     mutationFn: async () => {
@@ -112,5 +172,7 @@ export function useAuth() {
     signIn,
     signOut,
     resetPassword,
+    verifyOtp,
+    requestOtp,
   }
 }
